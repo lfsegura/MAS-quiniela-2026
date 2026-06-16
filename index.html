@@ -199,7 +199,13 @@ function standings(g){let T={};byGroup[g].forEach(f=>{T[f.home]=T[f.home]||z();T
  byGroup[g].forEach(f=>{let s=actual[f.mid];if(!s||s[0]==null||s[1]==null)return;done++;let h=T[f.home],a=T[f.away],hg=s[0],ag=s[1];
   h.p++;a.p++;h.gf+=hg;h.ga+=ag;a.gf+=ag;a.ga+=hg; if(hg>ag){h.pts+=3;}else if(hg<ag){a.pts+=3;}else{h.pts++;a.pts++;}});
  let r=Object.entries(T).map(([t,v])=>({t,...v,gd:v.gf-v.ga}));
- r.sort((x,y)=>y.pts-x.pts||y.gd-x.gd||y.gf-x.gf||x.t.localeCompare(y.t)); return{r,complete:done===6};}
+ r.sort((x,y)=>y.pts-x.pts||y.gd-x.gd||y.gf-x.gf||x.t.localeCompare(y.t));
+ // FIFA tiebreak: teams level on points+GD+goals are re-ranked by head-to-head (then name as last resort)
+ function h2h(names){let M={};names.forEach(t=>M[t]={pts:0,gd:0,gf:0});byGroup[g].forEach(f=>{let s=actual[f.mid];if(!s||s[0]==null||s[1]==null)return;if(M[f.home]&&M[f.away]){let hg=s[0],ag=s[1];M[f.home].gf+=hg;M[f.home].gd+=hg-ag;M[f.away].gf+=ag;M[f.away].gd+=ag-hg;if(hg>ag)M[f.home].pts+=3;else if(hg<ag)M[f.away].pts+=3;else{M[f.home].pts++;M[f.away].pts++;}}});return M;}
+ for(let i=0;i<r.length;){let j=i+1;while(j<r.length&&r[j].pts===r[i].pts&&r[j].gd===r[i].gd&&r[j].gf===r[i].gf)j++;
+  if(j-i>1){let M=h2h(r.slice(i,j).map(x=>x.t));let sub=r.slice(i,j).sort((x,y)=>M[y.t].pts-M[x.t].pts||M[y.t].gd-M[x.t].gd||M[y.t].gf-M[x.t].gf||x.t.localeCompare(y.t));for(let k=0;k<sub.length;k++)r[i+k]=sub[k];}
+  i=j;}
+ return{r,complete:done===6};}
 function compute(){let sc={};ENT.forEach(e=>sc[e]={m:0,gw:0,ko:0,bn:0});let played=0;
  DATA.fixtures.forEach(f=>{let a=actual[f.mid];if(a&&a[0]!=null&&a[1]!=null){played++;ENT.forEach(e=>{let p=mp(DATA.preds[e][f.mid],a);if(p!=null)sc[e].m+=p;});}});
  groups.forEach(g=>{let st=standings(g);if(st.complete){let w=st.r[0].t;ENT.forEach(e=>{if((DATA.predGW[e]||{})[g]===w)sc[e].gw+=6;});}});
