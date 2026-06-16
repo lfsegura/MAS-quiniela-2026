@@ -32,6 +32,7 @@ for es,al in ALIAS.items():
     for a in al: A2ES[norm(a)]=es
 def match_team(name):
     n=norm(name or '')
+    if not n: return None        # empty/None team name -> no match (avoid '' substring matching everything)
     if n in A2ES: return A2ES[n]
     for k,es in A2ES.items():
         if k and (k in n or n in k): return es
