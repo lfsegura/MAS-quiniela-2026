@@ -80,8 +80,13 @@ All paths are under the OneDrive folder:
   no editing). For a quick Netlify Drop deploy.
 - **`quiniela-github/`** — the auto-updating public site bundle (THIS folder):
   - `index.html` — read-only tracker that overlays `results.json` on load and self-refreshes every 30 min.
-  - `results.json` — `{ "<mid>": [homeGoals, awayGoals], ... }` actual results; rewritten by the Action.
-  - `scripts/fetch_results.py` — pulls FINISHED World Cup group matches from football-data.org and writes results.json.
+    `load()` routes `results.json.group` into `actual` (group `mid`s) and `results.json.ko` into `koActual`.
+  - `results.json` — `{ "group": { "<mid>": [homeGoals, awayGoals] }, "ko": { "<mid>": [homeES, awayES, homeGoals, awayGoals, advancingTeamES|null] } }`;
+    rewritten by the Action. (Legacy flat `{ "<mid>": [h,a] }` is still read as the group block for backward compat.)
+  - `scripts/fetch_results.py` — pulls FINISHED matches from football-data.org and writes results.json. Group
+    matches (mid 1–72) matched by team pair; knockouts (mid 73–104) matched by `stage` + chronological order onto
+    fixed mid slots (teams unknown until the bracket resolves), with the advancing team taken from the API `winner`
+    field (handles penalty shootouts). Set `FOOTBALL_DATA_FILE=<json>` to run it offline against a saved snapshot.
   - `scripts/fixtures.json` — `{fixtures:{mid:[homeES,awayES]}, alias:{teamES:[english aliases]}}` for name matching.
   - `.github/workflows/update.yml` — cron (every 2h) + manual; runs the fetcher and commits.
   - `setup_github.sh` — one-shot: creates the repo, pushes, sets the API secret, enables Pages, prints the URL.
@@ -133,7 +138,9 @@ All paths are under the OneDrive folder:
 - **Verify live-score matching on first Action run:** football-data.org may spell teams differently
   (e.g., Türkiye, Czechia, Korea Republic, Côte d'Ivoire). If a team doesn't match, add the variant to the alias
   list in `scripts/fixtures.json` (and it flows to the fetcher). Group-stage matching is by team pair.
-- **Extend auto-fetch to knockouts** once they start (map by date + teams; bracket teams are dynamic).
+- **Auto-fetch covers knockouts** (done): the fetcher maps R32→Final results into `results.json.ko` by stage +
+  kickoff order. Knockout *scorelines* and advancement/champion bonuses score automatically once `koActual` fills —
+  but knockout *points* only appear after participants' `koPreds` brackets are entered (still being collected).
 - **When Toño's full file arrives:** add his predictions to the tracker `preds`/`predGW`, then run the
   full-tournament Monte Carlo (see below) across all six on equal footing.
 - **Keep visuals on Incode brand** (section 6).

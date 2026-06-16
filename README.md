@@ -28,5 +28,5 @@ Comparte esa URL por WhatsApp. Funciona en celular y se actualiza sola.
 
 ## Notas
 - Si el fetch llegara a fallar, la página muestra los últimos resultados guardados (no se rompe).
-- Por ahora se auto-actualiza la **fase de grupos**. Las eliminatorias se pueden agregar después.
+- Se auto-actualizan la **fase de grupos** y las **eliminatorias** (de dieciseisavos a la final, incluidos penales).
 - Si algún equipo no empata por diferencia de nombre en la API, avísame y ajusto el mapa de alias.
