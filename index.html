@@ -267,7 +267,7 @@ function koByRound(){let rounds=[['R32','Dieciseisavos'],['R16','Octavos'],['QF'
 function koByDate(){let fs=koFix.slice().sort((x,y)=>x.dt<y.dt?-1:x.dt>y.dt?1:0);let H=koPendingMsg(),cur=null;
  fs.forEach(f=>{if(f.daykey!==cur){if(cur!==null)H+='</div>';cur=f.daykey;H+=`<div class="datehd">${f.daylabel}</div><div class="dlist">`;}
   let a=koActual[f.mid]||koActual[String(f.mid)]||[null,null,null,null,null];let pl=a[2]!=null;let hn=a[0]||'Por definir',an=a[1]||'Por definir';
-  H+=`<div class="drow"><div class="top"><span class="gbadge">${f.label}</span><span class="dtime">${f.hm} hrs</span></div>`+
+  H+=`<div class="drow"><div class="top"><span class="gbadge">${f.label}</span><span class="dtime">${f.hm} MEX</span></div>`+
      `<div class="mr"><div class="tm h"><span class="nme">${hn}</span><span class="fl">${a[0]?fl(a[0]):''}</span></div>`+
      `<div class="sb"><span class="sc ${pl?'played':''}">${a[2]==null?'–':a[2]}</span><span class="dash">·</span><span class="sc ${pl?'played':''}">${a[3]==null?'–':a[3]}</span></div>`+
      `<div class="tm"><span class="fl">${a[1]?fl(a[1]):''}</span><span class="nme">${an}</span></div></div>`+koPicks(f,a,pl)+`</div>`;});
@@ -281,7 +281,7 @@ function renderByDate(){let fx=DATA.fixtures.slice().sort((a,b)=>a.dt<b.dt?-1:a.
  let H='',cur=null;
  fx.forEach(f=>{if(f.daykey!==cur){if(cur!==null)H+='</div>';cur=f.daykey;H+=`<div class="datehd">${f.daylabel}</div><div class="dlist">`;}
   let a=actual[f.mid]||[null,null];let pl=a[0]!=null&&a[1]!=null;
-  H+=`<div class="drow"><div class="top"><span class="gbadge">Grupo ${f.group}</span><span class="dtime">${f.hm} hrs</span></div>`+
+  H+=`<div class="drow"><div class="top"><span class="gbadge">Grupo ${f.group}</span><span class="dtime">${f.hm} MEX</span></div>`+
      `<div class="mr"><div class="tm h"><span class="nme">${f.home}</span><span class="fl">${fl(f.home)}</span></div>`+
      `<div class="sb"><input class="sc ${pl?'played':''}" inputmode="numeric" value="${a[0]==null?'':a[0]}" onchange="setR(${f.mid},0,this.value)"><span class="dash">·</span><input class="sc ${pl?'played':''}" inputmode="numeric" value="${a[1]==null?'':a[1]}" onchange="setR(${f.mid},1,this.value)"></div>`+
      `<div class="tm"><span class="fl">${fl(f.away)}</span><span class="nme">${f.away}</span></div></div>`+
