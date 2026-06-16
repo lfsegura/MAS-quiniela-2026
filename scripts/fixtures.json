@@ -1,1 +1,459 @@
-{"fixtures": {"1": ["México", "Sudáfrica"], "2": ["Corea del Sur", "República Checa"], "3": ["Canadá", "Bosnia y Herzegovina"], "4": ["Estados Unidos", "Paraguay"], "5": ["Qatar", "Suiza"], "6": ["Brasil", "Marruecos"], "7": ["Haití", "Escocia"], "8": ["Australia", "Turquía"], "9": ["Alemania", "Curazao"], "10": ["Holanda", "Japón"], "11": ["Costa de Marfil", "Ecuador"], "12": ["Suecia", "Túnez"], "13": ["España", "Cabo Verde"], "14": ["Bélgica", "Egipto"], "15": ["Arabia Saudita", "Uruguay"], "16": ["Irán", "Nueva Zelanda"], "17": ["Francia", "Senegal"], "18": ["Irak", "Noruega"], "19": ["Argentina", "Argelia"], "20": ["Austria", "Jordania"], "21": ["Portugal", "RD Congo"], "22": ["Inglaterra", "Croacia"], "23": ["Ghana", "Panamá"], "24": ["Uzbekistán", "Colombia"], "25": ["República Checa", "Sudáfrica"], "26": ["Suiza", "Bosnia y Herzegovina"], "27": ["Canadá", "Qatar"], "28": ["México", "Corea del Sur"], "29": ["Estados Unidos", "Australia"], "30": ["Escocia", "Marruecos"], "31": ["Brasil", "Haití"], "32": ["Turquía", "Paraguay"], "33": ["Holanda", "Suecia"], "34": ["Alemania", "Costa de Marfil"], "35": ["Ecuador", "Curazao"], "36": ["Túnez", "Japón"], "37": ["España", "Arabia Saudita"], "38": ["Bélgica", "Irán"], "39": ["Uruguay", "Cabo Verde"], "40": ["Nueva Zelanda", "Egipto"], "41": ["Argentina", "Austria"], "42": ["Francia", "Irak"], "43": ["Noruega", "Senegal"], "44": ["Jordania", "Argelia"], "45": ["Portugal", "Uzbekistán"], "46": ["Inglaterra", "Ghana"], "47": ["Panamá", "Croacia"], "48": ["Colombia", "RD Congo"], "49": ["Suiza", "Canadá"], "50": ["Bosnia y Herzegovina", "Qatar"], "51": ["Escocia", "Brasil"], "52": ["Marruecos", "Haití"], "53": ["República Checa", "México"], "54": ["Sudáfrica", "Corea del Sur"], "55": ["Curazao", "Costa de Marfil"], "56": ["Ecuador", "Alemania"], "57": ["Japón", "Suecia"], "58": ["Túnez", "Holanda"], "59": ["Turquía", "Estados Unidos"], "60": ["Paraguay", "Australia"], "61": ["Noruega", "Francia"], "62": ["Senegal", "Irak"], "63": ["Cabo Verde", "Arabia Saudita"], "64": ["Uruguay", "España"], "65": ["Egipto", "Irán"], "66": ["Nueva Zelanda", "Bélgica"], "67": ["Panamá", "Inglaterra"], "68": ["Croacia", "Ghana"], "69": ["Colombia", "Portugal"], "70": ["RD Congo", "Uzbekistán"], "71": ["Argelia", "Austria"], "72": ["Jordania", "Argentina"]}, "alias": {"Alemania": ["germany"], "Arabia Saudita": ["saudi arabia"], "Argelia": ["algeria"], "Argentina": ["argentina"], "Australia": ["australia"], "Austria": ["austria"], "Bélgica": ["belgium"], "Bosnia y Herzegovina": ["bosnia and herzegovina", "bosnia-herzegovina", "bosnia"], "Brasil": ["brazil"], "Cabo Verde": ["cape verde", "cabo verde"], "Canadá": ["canada"], "Catar": ["qatar"], "Colombia": ["colombia"], "Corea del Sur": ["south korea", "korea republic", "korea, republic of", "republic of korea"], "Costa de Marfil": ["ivory coast", "cote divoire", "côte divoire", "cote d ivoire"], "Croacia": ["croatia"], "Curazao": ["curacao", "curaçao"], "Ecuador": ["ecuador"], "Egipto": ["egypt"], "Escocia": ["scotland"], "España": ["spain"], "Estados Unidos": ["united states", "usa", "united states of america"], "Francia": ["france"], "Ghana": ["ghana"], "Haití": ["haiti"], "Holanda": ["netherlands", "holland"], "Inglaterra": ["england"], "Irak": ["iraq"], "Irán": ["iran", "ir iran"], "Japón": ["japan"], "Jordania": ["jordan"], "Marruecos": ["morocco"], "México": ["mexico"], "Noruega": ["norway"], "Nueva Zelanda": ["new zealand"], "Panamá": ["panama"], "Paraguay": ["paraguay"], "Portugal": ["portugal"], "RD Congo": ["dr congo", "congo dr", "democratic republic of congo", "congo democratic republic"], "República Checa": ["czechia", "czech republic"], "Senegal": ["senegal"], "Sudáfrica": ["south africa"], "Suecia": ["sweden"], "Suiza": ["switzerland"], "Túnez": ["tunisia"], "Turquía": ["turkey", "türkiye", "turkiye"], "Uruguay": ["uruguay"], "Uzbekistán": ["uzbekistan"]}}
+{
+ "fixtures": {
+  "1": [
+   "México",
+   "Sudáfrica"
+  ],
+  "2": [
+   "Corea del Sur",
+   "República Checa"
+  ],
+  "3": [
+   "Canadá",
+   "Bosnia y Herzegovina"
+  ],
+  "4": [
+   "Estados Unidos",
+   "Paraguay"
+  ],
+  "5": [
+   "Qatar",
+   "Suiza"
+  ],
+  "6": [
+   "Brasil",
+   "Marruecos"
+  ],
+  "7": [
+   "Haití",
+   "Escocia"
+  ],
+  "8": [
+   "Australia",
+   "Turquía"
+  ],
+  "9": [
+   "Alemania",
+   "Curazao"
+  ],
+  "10": [
+   "Holanda",
+   "Japón"
+  ],
+  "11": [
+   "Costa de Marfil",
+   "Ecuador"
+  ],
+  "12": [
+   "Suecia",
+   "Túnez"
+  ],
+  "13": [
+   "España",
+   "Cabo Verde"
+  ],
+  "14": [
+   "Bélgica",
+   "Egipto"
+  ],
+  "15": [
+   "Arabia Saudita",
+   "Uruguay"
+  ],
+  "16": [
+   "Irán",
+   "Nueva Zelanda"
+  ],
+  "17": [
+   "Francia",
+   "Senegal"
+  ],
+  "18": [
+   "Irak",
+   "Noruega"
+  ],
+  "19": [
+   "Argentina",
+   "Argelia"
+  ],
+  "20": [
+   "Austria",
+   "Jordania"
+  ],
+  "21": [
+   "Portugal",
+   "RD Congo"
+  ],
+  "22": [
+   "Inglaterra",
+   "Croacia"
+  ],
+  "23": [
+   "Ghana",
+   "Panamá"
+  ],
+  "24": [
+   "Uzbekistán",
+   "Colombia"
+  ],
+  "25": [
+   "República Checa",
+   "Sudáfrica"
+  ],
+  "26": [
+   "Suiza",
+   "Bosnia y Herzegovina"
+  ],
+  "27": [
+   "Canadá",
+   "Qatar"
+  ],
+  "28": [
+   "México",
+   "Corea del Sur"
+  ],
+  "29": [
+   "Estados Unidos",
+   "Australia"
+  ],
+  "30": [
+   "Escocia",
+   "Marruecos"
+  ],
+  "31": [
+   "Brasil",
+   "Haití"
+  ],
+  "32": [
+   "Turquía",
+   "Paraguay"
+  ],
+  "33": [
+   "Holanda",
+   "Suecia"
+  ],
+  "34": [
+   "Alemania",
+   "Costa de Marfil"
+  ],
+  "35": [
+   "Ecuador",
+   "Curazao"
+  ],
+  "36": [
+   "Túnez",
+   "Japón"
+  ],
+  "37": [
+   "España",
+   "Arabia Saudita"
+  ],
+  "38": [
+   "Bélgica",
+   "Irán"
+  ],
+  "39": [
+   "Uruguay",
+   "Cabo Verde"
+  ],
+  "40": [
+   "Nueva Zelanda",
+   "Egipto"
+  ],
+  "41": [
+   "Argentina",
+   "Austria"
+  ],
+  "42": [
+   "Francia",
+   "Irak"
+  ],
+  "43": [
+   "Noruega",
+   "Senegal"
+  ],
+  "44": [
+   "Jordania",
+   "Argelia"
+  ],
+  "45": [
+   "Portugal",
+   "Uzbekistán"
+  ],
+  "46": [
+   "Inglaterra",
+   "Ghana"
+  ],
+  "47": [
+   "Panamá",
+   "Croacia"
+  ],
+  "48": [
+   "Colombia",
+   "RD Congo"
+  ],
+  "49": [
+   "Suiza",
+   "Canadá"
+  ],
+  "50": [
+   "Bosnia y Herzegovina",
+   "Qatar"
+  ],
+  "51": [
+   "Escocia",
+   "Brasil"
+  ],
+  "52": [
+   "Marruecos",
+   "Haití"
+  ],
+  "53": [
+   "República Checa",
+   "México"
+  ],
+  "54": [
+   "Sudáfrica",
+   "Corea del Sur"
+  ],
+  "55": [
+   "Curazao",
+   "Costa de Marfil"
+  ],
+  "56": [
+   "Ecuador",
+   "Alemania"
+  ],
+  "57": [
+   "Japón",
+   "Suecia"
+  ],
+  "58": [
+   "Túnez",
+   "Holanda"
+  ],
+  "59": [
+   "Turquía",
+   "Estados Unidos"
+  ],
+  "60": [
+   "Paraguay",
+   "Australia"
+  ],
+  "61": [
+   "Noruega",
+   "Francia"
+  ],
+  "62": [
+   "Senegal",
+   "Irak"
+  ],
+  "63": [
+   "Cabo Verde",
+   "Arabia Saudita"
+  ],
+  "64": [
+   "Uruguay",
+   "España"
+  ],
+  "65": [
+   "Egipto",
+   "Irán"
+  ],
+  "66": [
+   "Nueva Zelanda",
+   "Bélgica"
+  ],
+  "67": [
+   "Panamá",
+   "Inglaterra"
+  ],
+  "68": [
+   "Croacia",
+   "Ghana"
+  ],
+  "69": [
+   "Colombia",
+   "Portugal"
+  ],
+  "70": [
+   "RD Congo",
+   "Uzbekistán"
+  ],
+  "71": [
+   "Argelia",
+   "Austria"
+  ],
+  "72": [
+   "Jordania",
+   "Argentina"
+  ]
+ },
+ "alias": {
+  "Alemania": [
+   "germany"
+  ],
+  "Arabia Saudita": [
+   "saudi arabia"
+  ],
+  "Argelia": [
+   "algeria"
+  ],
+  "Argentina": [
+   "argentina"
+  ],
+  "Australia": [
+   "australia"
+  ],
+  "Austria": [
+   "austria"
+  ],
+  "Bélgica": [
+   "belgium"
+  ],
+  "Bosnia y Herzegovina": [
+   "bosnia and herzegovina",
+   "bosnia-herzegovina",
+   "bosnia"
+  ],
+  "Brasil": [
+   "brazil"
+  ],
+  "Cabo Verde": [
+   "cape verde",
+   "cabo verde"
+  ],
+  "Canadá": [
+   "canada"
+  ],
+  "Colombia": [
+   "colombia"
+  ],
+  "Corea del Sur": [
+   "south korea",
+   "korea republic",
+   "korea, republic of",
+   "republic of korea"
+  ],
+  "Costa de Marfil": [
+   "ivory coast",
+   "cote divoire",
+   "côte divoire",
+   "cote d ivoire"
+  ],
+  "Croacia": [
+   "croatia"
+  ],
+  "Curazao": [
+   "curacao",
+   "curaçao"
+  ],
+  "Ecuador": [
+   "ecuador"
+  ],
+  "Egipto": [
+   "egypt"
+  ],
+  "Escocia": [
+   "scotland"
+  ],
+  "España": [
+   "spain"
+  ],
+  "Estados Unidos": [
+   "united states",
+   "usa",
+   "united states of america"
+  ],
+  "Francia": [
+   "france"
+  ],
+  "Ghana": [
+   "ghana"
+  ],
+  "Haití": [
+   "haiti"
+  ],
+  "Holanda": [
+   "netherlands",
+   "holland"
+  ],
+  "Inglaterra": [
+   "england"
+  ],
+  "Irak": [
+   "iraq"
+  ],
+  "Irán": [
+   "iran",
+   "ir iran"
+  ],
+  "Japón": [
+   "japan"
+  ],
+  "Jordania": [
+   "jordan"
+  ],
+  "Marruecos": [
+   "morocco"
+  ],
+  "México": [
+   "mexico"
+  ],
+  "Noruega": [
+   "norway"
+  ],
+  "Nueva Zelanda": [
+   "new zealand"
+  ],
+  "Panamá": [
+   "panama"
+  ],
+  "Paraguay": [
+   "paraguay"
+  ],
+  "Portugal": [
+   "portugal"
+  ],
+  "RD Congo": [
+   "dr congo",
+   "congo dr",
+   "democratic republic of congo",
+   "congo democratic republic"
+  ],
+  "República Checa": [
+   "czechia",
+   "czech republic"
+  ],
+  "Senegal": [
+   "senegal"
+  ],
+  "Sudáfrica": [
+   "south africa"
+  ],
+  "Suecia": [
+   "sweden"
+  ],
+  "Suiza": [
+   "switzerland"
+  ],
+  "Túnez": [
+   "tunisia"
+  ],
+  "Turquía": [
+   "turkey",
+   "türkiye",
+   "turkiye"
+  ],
+  "Uruguay": [
+   "uruguay"
+  ],
+  "Uzbekistán": [
+   "uzbekistan"
+  ],
+  "Qatar": [
+   "qatar",
+   "catar"
+  ]
+ }
+}
