@@ -301,6 +301,6 @@ function setR(mid,i,v){return;if(!actual[mid])actual[mid]=[null,null];actual[mid
 function resetAll(){if(!confirm('¿Borrar todos los resultados introducidos?'))return;actual=Object.assign({},DATA.actual);localStorage.removeItem(LS);renderLB();render();renderKnockouts();}
 renderLB();setView(view);renderKnockouts();
 (function(){function load(){fetch('results.json?ts='+Date.now()).then(r=>r.ok?r.json():null).then(j=>{if(j){const g=j.group||j;for(const k in g)actual[k]=g[k];if(j.ko)for(const k in j.ko)koActual[k]=j.ko[k];renderLB();render();try{renderKnockouts()}catch(e){}}}).catch(()=>{});}
-load();setInterval(load,1800000);})();
+load();setInterval(load,180000);})();
 
 </script></body></html>

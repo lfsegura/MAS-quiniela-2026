@@ -1,7 +1,7 @@
 name: Update results
 on:
   schedule:
-    - cron: '0 */2 * * *'   # every 2 hours (UTC)
+    - cron: '*/10 * * * *'  # every 10 minutes (GitHub may delay/coalesce scheduled runs under load)
   workflow_dispatch:         # allow manual run
 permissions:
   contents: write
