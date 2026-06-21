@@ -85,8 +85,21 @@ for stage,mids in STAGE_MIDS.items():
         adv=h if w=='HOME_TEAM' else a if w=='AWAY_TEAM' else None
         ko[str(mid)]=[h,a,hg,ag,adv]; k_added+=1
 
+# --- manual overrides: corrections for API errors. Applied LAST so they win and persist
+#     across every fetch. Edit overrides.json to add/remove; see its _comment for the format. ---
+ov_g=ov_k=0
+try:
+    ov=json.load(open(os.path.join(ROOT,'overrides.json')))
+    for mid,val in (ov.get('group') or {}).items(): group[str(mid)]=val; ov_g+=1
+    for mid,val in (ov.get('ko') or {}).items(): ko[str(mid)]=val; ov_k+=1
+except FileNotFoundError:
+    pass
+except Exception as e:
+    print('WARNING: overrides.json present but unreadable, ignoring:', e)
+
 out={'group':group,'ko':ko}
 json.dump(out,open(os.path.join(ROOT,'results.json'),'w'),ensure_ascii=False,indent=0)
 print(f'updated results.json — group: {g_added} matched ({len(group)} total) · '
       f'ko: {k_added} matched ({len(ko)} total)'
+      + (f' · overrides applied: {ov_g} group, {ov_k} ko' if (ov_g or ov_k) else '')
       + (f' · {unmatched_team} ko match(es) had unrecognized team names' if unmatched_team else ''))

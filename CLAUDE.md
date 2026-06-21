@@ -87,6 +87,9 @@ All paths are under the OneDrive folder:
     matches (mid 1–72) matched by team pair; knockouts (mid 73–104) matched by `stage` + chronological order onto
     fixed mid slots (teams unknown until the bracket resolves), with the advancing team taken from the API `winner`
     field (handles penalty shootouts). Set `FOOTBALL_DATA_FILE=<json>` to run it offline against a saved snapshot.
+  - `overrides.json` — manual corrections for when the API reports a wrong score. `{group:{mid:[h,a]}, ko:{mid:[...]}}`.
+    The fetcher applies these LAST (override always wins and persists across fetches). To fix a bad API value: add the
+    mid; to revert once the source self-corrects: delete the entry. (Currently mid 37 = Spain 4-0, API wrongly had 5-0.)
   - `scripts/fixtures.json` — `{fixtures:{mid:[homeES,awayES]}, alias:{teamES:[english aliases]}}` for name matching.
   - `.github/workflows/update.yml` — cron (every 2h) + manual; runs the fetcher and commits.
   - `setup_github.sh` — one-shot: creates the repo, pushes, sets the API secret, enables Pages, prints the URL.

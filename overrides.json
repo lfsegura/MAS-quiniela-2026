@@ -1,0 +1,7 @@
+{
+  "_comment": "Manual corrections applied AFTER the API fetch (override always wins and persists across fetches). Use ONLY when football-data.org reports a wrong score. group format: {\"<mid>\": [home, away]}. ko format: {\"<mid>\": [homeES, awayES, homeGoals, awayGoals, advancingTeamES]}. To revert a correction once the source self-fixes, delete that entry. Currently: mid 37 = Spain 4-0 Saudi Arabia (API wrongly reported 5-0).",
+  "group": {
+    "37": [4, 0]
+  },
+  "ko": {}
+}
