@@ -58,7 +58,7 @@ ko=dict(prev.get('ko', {}))
 # --- group stage: match by team pair (both orientations) ---
 pair2mid={}
 for mid,(h,a) in FIX.items(): pair2mid[(h,a)]=mid
-g_added=0
+g_added=0; api_final_group={}   # mid -> [h,a] for matches the API reports FINISHED (used to auto-prune overrides)
 for m in matches:
     if m.get('stage')!='GROUP_STAGE' or m.get('status')!='FINISHED': continue
     h=match_team(m['homeTeam'].get('name')); a=match_team(m['awayTeam'].get('name'))
@@ -68,10 +68,10 @@ for m in matches:
     if (h,a) in pair2mid: mid=pair2mid[(h,a)]; res=[hg,ag]
     elif (a,h) in pair2mid: mid=pair2mid[(a,h)]; res=[ag,hg]
     else: continue
-    group[str(mid)]=res; g_added+=1
+    group[str(mid)]=res; g_added+=1; api_final_group[str(mid)]=res
 
 # --- knockouts: assign each stage's matches to its mid slots in kickoff order ---
-k_added=0; unmatched_team=0
+k_added=0; unmatched_team=0; api_final_ko={}
 for stage,mids in STAGE_MIDS.items():
     stage_matches=sorted([m for m in matches if m.get('stage')==stage],
                          key=lambda m:(m.get('utcDate') or '', m.get('id') or 0))
@@ -83,15 +83,27 @@ for stage,mids in STAGE_MIDS.items():
         if not h or not a: unmatched_team+=1; continue
         w=m.get('score',{}).get('winner')   # HOME_TEAM / AWAY_TEAM / DRAW
         adv=h if w=='HOME_TEAM' else a if w=='AWAY_TEAM' else None
-        ko[str(mid)]=[h,a,hg,ag,adv]; k_added+=1
+        ko[str(mid)]=[h,a,hg,ag,adv]; k_added+=1; api_final_ko[str(mid)]=[h,a,hg,ag,adv]
 
-# --- manual overrides: corrections for API errors. Applied LAST so they win and persist
-#     across every fetch. Edit overrides.json to add/remove; see its _comment for the format. ---
-ov_g=ov_k=0
+# --- manual overrides: corrections for API errors / early-show. Applied LAST so they win and
+#     persist across fetches. Edit overrides.json to add; see its _comment for the format.
+#     AUTO-PRUNE RULE: an override is removed automatically once the API reports that match
+#     FINISHED *and* with a score matching the override (then the API serves it on its own).
+#     An override over a still-wrong-but-FINISHED API value is kept (API disagrees). ---
+ov_g=ov_k=0; pruned=[]
 try:
     ov=json.load(open(os.path.join(ROOT,'overrides.json')))
-    for mid,val in (ov.get('group') or {}).items(): group[str(mid)]=val; ov_g+=1
-    for mid,val in (ov.get('ko') or {}).items(): ko[str(mid)]=val; ov_k+=1
+    og=ov.get('group') or {}; ok=ov.get('ko') or {}
+    for mid in list(og.keys()):
+        if api_final_group.get(str(mid))==og[mid]: pruned.append('group/'+str(mid)); del og[mid]
+        else: group[str(mid)]=og[mid]; ov_g+=1
+    for mid in list(ok.keys()):
+        if api_final_ko.get(str(mid))==ok[mid]: pruned.append('ko/'+str(mid)); del ok[mid]
+        else: ko[str(mid)]=ok[mid]; ov_k+=1
+    if pruned:                      # rewrite overrides.json without the now-redundant entries
+        ov['group']=og; ov['ko']=ok
+        json.dump(ov, open(os.path.join(ROOT,'overrides.json'),'w'), ensure_ascii=False, indent=2)
+        open(os.path.join(ROOT,'overrides.json'),'a').write('\n')
 except FileNotFoundError:
     pass
 except Exception as e:
@@ -102,4 +114,5 @@ json.dump(out,open(os.path.join(ROOT,'results.json'),'w'),ensure_ascii=False,ind
 print(f'updated results.json — group: {g_added} matched ({len(group)} total) · '
       f'ko: {k_added} matched ({len(ko)} total)'
       + (f' · overrides applied: {ov_g} group, {ov_k} ko' if (ov_g or ov_k) else '')
+      + (f' · overrides auto-removed (API now final & matching): {", ".join(pruned)}' if pruned else '')
       + (f' · {unmatched_team} ko match(es) had unrecognized team names' if unmatched_team else ''))
