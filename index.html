@@ -138,7 +138,19 @@ input.sc{width:1.8em;text-align:center;min-width:0}.flag{height:14px;width:auto;
 .rtab td:not(:first-child),.rtab th:not(:first-child){text-align:center;width:88px}
 .rsub{font-weight:600;color:var(--g600);font-size:13px;margin:0 0 6px}
 .rlist{margin:0 0 12px;padding-left:18px;font-size:13px;color:var(--g500);line-height:1.6}
-.rnote{font-size:12px;color:var(--g400);line-height:1.5;margin:0}</style></head><body><div class="wrap">
+.rnote{font-size:12px;color:var(--g400);line-height:1.5;margin:0}
+.bsec{font-weight:600;color:var(--g600);font-size:12.5px;margin:8px 0 4px;display:flex;align-items:center;gap:6px}
+.bsec[onclick]{cursor:pointer}.bsecsub{font-weight:400;color:var(--g400)}
+.marc{margin:0 0 4px}
+.mph{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--g400);margin:8px 0 3px}
+.mrow{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--g500)}
+.mrow .mt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mrow .mp{color:var(--g400);white-space:nowrap;font-size:11.5px}
+.mrow .mpts{font-weight:600;min-width:30px;text-align:right;color:var(--g300)}
+.mrow .mpts.p1,.mrow .mpts.p2,.mrow .mpts.p3,.mrow .mpts.p6{color:#2E9E50}
+.mwhy{font-size:11px;color:var(--g300);margin:0 0 5px}
+.btot{border-top:1px solid var(--g200);margin-top:8px;padding-top:7px;font-size:13px;color:var(--g500)}
+.btot b{color:var(--g600);font-size:15px}</style></head><body><div class="wrap">
 <div class="hd"><div><h1>Quiniela Mundial 2026</h1><p class="sub">Torneo completo · 104 partidos · marcador en vivo · 6 participantes</p></div>
 <div class="prog"><div class="lab"><span>Progreso</span><span id="pgtxt"></span></div><div class="bar"><i id="pgbar"></i></div></div></div>
 <div class="section-t">Clasificación general</div><div class="lb" id="lb"></div>
@@ -262,15 +274,30 @@ function compute(){let sc={},det={};ENT.forEach(e=>{sc[e]={m:0,gw:0,ko:0,bn:0};d
 let bonusOpen={};
 function toggleBonus(e){bonusOpen[e]=!bonusOpen[e];let d=document.getElementById('bd-'+e),c=document.getElementById('bcar-'+e);if(d)d.style.display=bonusOpen[e]?'block':'none';if(c)c.textContent=bonusOpen[e]?'▾':'▸';}
 function toggleRules(){let r=document.getElementById('rules'),c=document.getElementById('rulecar');let o=r.style.display==='none';r.style.display=o?'block':'none';if(c)c.textContent=o?'▾':'▸';}
+let marcOpen={};
+function toggleMarc(e){marcOpen[e]=!marcOpen[e];let d=document.getElementById('marc-'+e),c=document.getElementById('mcar-'+e);if(d)d.style.display=marcOpen[e]?'block':'none';if(c)c.textContent=marcOpen[e]?'▾':'▸';}
+// per-match scoreline components (resultado/goles/exacto), mirrors mp()/koMp() so totals reconcile
+function comp2(pred,act,P){let r={s:0,l:0,v:0,x:0,t:0};if(!act||act[0]==null||act[1]==null)return r;let ah=act[0],aa=act[1],ph=pred?pred[0]:null,pa=pred?pred[1]:null;if(ph!=null&&pa!=null){if(Math.sign(ph-pa)===Math.sign(ah-aa))r.s=P[0];if(ph===ah)r.l=P[1];if(pa===aa)r.v=P[1];if(ph===ah&&pa===aa)r.x=P[2];}r.t=r.s+r.l+r.v+r.x;return r;}
+function scoreStory(e){let G=[],K=[];
+ DATA.fixtures.forEach(f=>{let a=actual[f.mid];if(!a||a[0]==null||a[1]==null)return;let p=DATA.preds[e][f.mid];G.push({tm:`${f.home} ${a[0]}–${a[1]} ${f.away}`,pk:(p&&p[0]!=null)?`${p[0]}–${p[1]}`:null,c:comp2(p,a,[2,1,2])});});
+ koFix.forEach(f=>{let a=koActual[f.mid]||koActual[String(f.mid)];if(!a||a[2]==null)return;let pr=(koPreds[e]||{})[f.mid];let p=pr?[pr[2],pr[3]]:null;K.push({tm:`${a[0]} ${a[2]}–${a[3]} ${a[1]}`,pk:(pr&&pr[2]!=null)?`${pr[2]}–${pr[3]}`:null,c:comp2(p,[a[2],a[3]],KOPTS[f.round])});});
+ return{G,K};}
 function renderLB(){let{sc,played,koPlayed,det}=compute();let arr=ENT.map(e=>({e,m:sc[e].m,gw:sc[e].gw,ko:sc[e].ko,bn:sc[e].bn,t:sc[e].m+sc[e].gw+sc[e].ko+sc[e].bn}));
  arr.sort((a,b)=>b.t-a.t);let mx=Math.max(1,...arr.map(a=>a.t));
  let h='';arr.forEach((r,i)=>{let me=r.e==='LF';let comp=DATA.preds[r.e];let blanks=Object.values(comp).filter(v=>v[0]==null&&v[1]==null).length;
   let hasKo=Object.keys(koPreds[r.e]||{}).length>0;
   let tag = blanks>40?'<span class="tag part">parcial</span>':(blanks>0||!hasKo)?'<span class="tag grp">solo grupos</span>':'<span class="tag ok">completo</span>';
   let rkc = i===0?'r1':(i<3?'r3':'');let open=bonusOpen[r.e];
+  let ss=scoreStory(r.e),mopen=marcOpen[r.e];
+  let fmt=x=>{let w=x.pk?`<div class="mwhy">resultado ${x.c.s?'+'+x.c.s:'✗'} · local ${x.c.l?'+'+x.c.l:'✗'} · visita ${x.c.v?'+'+x.c.v:'✗'} · exacto ${x.c.x?'+'+x.c.x:'✗'}</div>`:'';
+    return `<div class="mrow"><span class="mt">${x.tm}</span><span class="mp">${x.pk?'tu '+x.pk:'sin pronóstico'}</span><span class="mpts ${pcls(x.c.t)}">${x.c.t>0?'+':''}${x.c.t}</span></div>${w}`;};
+  let marcBody=(ss.G.length?'<div class="mph">Fase de grupos</div>'+ss.G.map(fmt).join(''):'')+(ss.K.length?'<div class="mph">Eliminatorias</div>'+ss.K.map(fmt).join(''):'');
+  let nMatch=ss.G.length+ss.K.length;
+  let marcSec=nMatch?`<div class="bsec" onclick="toggleMarc('${r.e}')"><span id="mcar-${r.e}">${mopen?'▾':'▸'}</span> Marcadores <span class="bsecsub">(${nMatch} partidos · ${r.m+r.ko} pts)</span></div><div class="marc" id="marc-${r.e}" style="display:${mopen?'block':'none'}">${marcBody}</div>`:'';
   let rows=(det[r.e]||[]).map(d=>`<tr><td>${d.lbl}${d.sub?` <span class="bsub">${d.sub}</span>`:''}</td><td class="c">${d.calc}</td><td class="p">+${d.pts}</td></tr>`).join('');
-  let bd = rows ? `<table class="bdt">${rows}<tr class="tot"><td>Bono total</td><td class="c"></td><td class="p">${r.gw+r.bn}</td></tr></table>`
-                : `<div class="bnone">Sin bonos todavía — el de ganador de grupo aparece al cerrarse cada grupo; los de avance, al iniciar la fase final.</div>`;
+  let bonosSec=rows?`<div class="bsec">Bonos <span class="bsecsub">(${r.gw+r.bn} pts)</span></div><table class="bdt">${rows}</table>`
+                   :`<div class="bnone">Sin bonos todavía — el de ganador de grupo aparece al cerrarse cada grupo; los de avance, al iniciar la fase final.</div>`;
+  let bd = marcSec+bonosSec+`<div class="btot">Total: ${r.m+r.ko} marcadores + ${r.gw+r.bn} bonos = <b>${r.t}</b></div>`;
   h+=`<div class="lbitem"><div class="row ${me?'me':''}" onclick="toggleBonus('${r.e}')"><div class="rk ${rkc}">${i+1}</div>`+
    `<div><div class="nm">${r.e} ${tag}<span class="bcar" id="bcar-${r.e}">${open?'▾':'▸'}</span></div><div class="pbar"><i style="width:${r.t/mx*100}%"></i></div></div>`+
    `<div class="pts"><b>${r.t}</b><small>${r.m+r.ko} <span class="tip" data-tip="Puntos por aciertos en marcadores (grupos + eliminatorias)">part</span> · ${r.gw+r.bn} <span class="tip" data-tip="Bonos: ganador de grupo y avance de equipos por ronda (hasta +25 al campeón)">bono</span></small></div></div>`+
