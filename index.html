@@ -297,7 +297,7 @@ function renderLB(){let{sc,played,koPlayed,det}=compute();let arr=ENT.map(e=>({e
   let rows=(det[r.e]||[]).map(d=>`<tr><td>${d.lbl}${d.sub?` <span class="bsub">${d.sub}</span>`:''}</td><td class="c">${d.calc}</td><td class="p">+${d.pts}</td></tr>`).join('');
   let bonosSec=rows?`<div class="bsec">Bonos <span class="bsecsub">(${r.gw+r.bn} pts)</span></div><table class="bdt">${rows}</table>`
                    :`<div class="bnone">Sin bonos todavía — el de ganador de grupo aparece al cerrarse cada grupo; los de avance, al iniciar la fase final.</div>`;
-  let totLine=`Total: ${r.m+r.ko} marcadores + ${r.gw+r.bn} bonos = <b>${r.t}</b>`+(r.e==='Moris'?` − <span class="pen">Penalización por ser Moris</span> −${r.t} = <b>0</b>`:'');
+  let totLine=`Total: ${r.m+r.ko} marcadores + ${r.gw+r.bn} bonos = <b>${r.t}</b>`+(r.e==='Moris'?` − <span class="pen">Penalización por ser Gay</span> −${r.t} = <b>0</b>`:'');
   let bd = marcSec+bonosSec+`<div class="btot">${totLine}</div>`;
   h+=`<div class="lbitem"><div class="row ${me?'me':''}" onclick="toggleBonus('${r.e}')"><div class="rk ${rkc}">${i+1}</div>`+
    `<div><div class="nm">${r.e} ${tag}<span class="bcar" id="bcar-${r.e}">${open?'▾':'▸'}</span></div><div class="pbar"><i style="width:${r.t/mx*100}%"></i></div></div>`+
