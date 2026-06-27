@@ -1,7 +1,5 @@
 {
   "_comment": "Manual corrections applied AFTER the API fetch (override always wins and persists across fetches). Use when football-data.org reports a wrong score, or to show a just-finished match before the feed flips it to FINISHED. group format: {\"<mid>\": [home, away]}. ko format: {\"<mid>\": [homeES, awayES, homeGoals, awayGoals, advancingTeamES]}. Entries auto-remove once the API reports that match FINISHED with a matching score. Current: mid 68 = Croacia 2-1 Ghana (shown early while API still IN_PLAY).",
-  "group": {
-    "68": [2, 1]
-  },
+  "group": {},
   "ko": {}
 }
