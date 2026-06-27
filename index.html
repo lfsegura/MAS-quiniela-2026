@@ -147,7 +147,7 @@ input.sc{width:1.8em;text-align:center;min-width:0}.flag{height:14px;width:auto;
 .mrow .mt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .mrow .mp{color:var(--g400);white-space:nowrap;font-size:11.5px}
 .mrow .mpts{font-weight:600;min-width:30px;text-align:right;color:var(--g300)}
-.mrow .mpts.p1,.mrow .mpts.p2,.mrow .mpts.p3,.mrow .mpts.p6{color:#2E9E50}
+.mrow .mpts.pos{color:#2E9E50}
 .mwhy{font-size:11px;color:var(--g300);margin:0 0 5px}
 .btot{border-top:1px solid var(--g200);margin-top:8px;padding-top:7px;font-size:13px;color:var(--g500)}
 .btot b{color:var(--g600);font-size:15px}</style></head><body><div class="wrap">
@@ -290,7 +290,7 @@ function renderLB(){let{sc,played,koPlayed,det}=compute();let arr=ENT.map(e=>({e
   let rkc = i===0?'r1':(i<3?'r3':'');let open=bonusOpen[r.e];
   let ss=scoreStory(r.e),mopen=marcOpen[r.e];
   let fmt=x=>{let w=x.pk?`<div class="mwhy">resultado ${x.c.s?'+'+x.c.s:'✗'} · local ${x.c.l?'+'+x.c.l:'✗'} · visita ${x.c.v?'+'+x.c.v:'✗'} · exacto ${x.c.x?'+'+x.c.x:'✗'}</div>`:'';
-    return `<div class="mrow"><span class="mt">${x.tm}</span><span class="mp">${x.pk?'tu '+x.pk:'sin pronóstico'}</span><span class="mpts ${pcls(x.c.t)}">${x.c.t>0?'+':''}${x.c.t}</span></div>${w}`;};
+    return `<div class="mrow"><span class="mt">${x.tm}</span><span class="mp">${x.pk?'tu '+x.pk:'sin pronóstico'}</span><span class="mpts${x.c.t>0?' pos':''}">${x.c.t>0?'+':''}${x.c.t}</span></div>${w}`;};
   let marcBody=(ss.G.length?'<div class="mph">Fase de grupos</div>'+ss.G.map(fmt).join(''):'')+(ss.K.length?'<div class="mph">Eliminatorias</div>'+ss.K.map(fmt).join(''):'');
   let nMatch=ss.G.length+ss.K.length;
   let marcSec=nMatch?`<div class="bsec" onclick="toggleMarc('${r.e}')"><span id="mcar-${r.e}">${mopen?'▾':'▸'}</span> Marcadores <span class="bsecsub">(${nMatch} partidos · ${r.m+r.ko} pts)</span></div><div class="marc" id="marc-${r.e}" style="display:${mopen?'block':'none'}">${marcBody}</div>`:'';
