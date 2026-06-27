@@ -129,7 +129,16 @@ input.sc{width:1.8em;text-align:center;min-width:0}.flag{height:14px;width:auto;
 .bdt td.p{text-align:right;font-weight:600;color:var(--g600);white-space:nowrap;width:46px}
 .bdt .bsub{color:var(--g300);font-weight:400}
 .bdt tr.tot td{border-top:1px solid var(--g200);padding-top:6px;font-weight:600;color:var(--g600)}
-.bnone{font-size:12.5px;color:var(--g400)}</style></head><body><div class="wrap">
+.bnone{font-size:12.5px;color:var(--g400)}
+.rulehdr{cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.rules{background:var(--g50);border:1px solid var(--g100);border-radius:12px;padding:16px}
+.rtab{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:14px}
+.rtab th{text-align:left;font-weight:500;color:var(--g400);font-size:11px;text-transform:uppercase;letter-spacing:.04em;padding:4px 8px;border-bottom:1px solid var(--g100)}
+.rtab td{padding:5px 8px;color:var(--g500);border-bottom:1px solid var(--g100)}
+.rtab td:not(:first-child),.rtab th:not(:first-child){text-align:center;width:88px}
+.rsub{font-weight:600;color:var(--g600);font-size:13px;margin:0 0 6px}
+.rlist{margin:0 0 12px;padding-left:18px;font-size:13px;color:var(--g500);line-height:1.6}
+.rnote{font-size:12px;color:var(--g400);line-height:1.5;margin:0}</style></head><body><div class="wrap">
 <div class="hd"><div><h1>Quiniela Mundial 2026</h1><p class="sub">Torneo completo · 104 partidos · marcador en vivo · 6 participantes</p></div>
 <div class="prog"><div class="lab"><span>Progreso</span><span id="pgtxt"></span></div><div class="bar"><i id="pgbar"></i></div></div></div>
 <div class="section-t">Clasificación general</div><div class="lb" id="lb"></div>
@@ -137,6 +146,21 @@ input.sc{width:1.8em;text-align:center;min-width:0}.flag{height:14px;width:auto;
 <div class="legend"><span><b>+2</b> signo</span><span><b>+1</b> cada goleo</span><span><b>+2</b> exacto</span><span><b>+6</b> gana grupo</span><span class="clf">▌ clasifica</span></div></div>
 <div class="section-t" style="display:flex;align-items:center;justify-content:space-between;gap:10px">Partidos<span class="viewtoggle"><button data-v="group" onclick="setView('group')">Por grupos</button><button data-v="date" onclick="setView('date')">Por fecha</button></span></div><div class="grid" id="groups"></div>
 <div class="section-t">Eliminatorias</div><div class="grid" id="ko"></div>
+<div class="section-t rulehdr" onclick="toggleRules()">Cómo se calculan los puntos<span class="bcar" id="rulecar">▸</span></div>
+<div id="rules" class="rules" style="display:none">
+<p class="rsub">Marcadores — en cada partido</p>
+<table class="rtab"><tr><th>Ronda</th><th>Resultado</th><th>Cada goleo</th><th>Exacto</th></tr>
+<tr><td>Fase de grupos</td><td>+2</td><td>+1</td><td>+2</td></tr>
+<tr><td>16avos · octavos · cuartos</td><td>+4</td><td>+2</td><td>+4</td></tr>
+<tr><td>Semifinales</td><td>+8</td><td>+4</td><td>+8</td></tr>
+<tr><td>Final y 3.º puesto</td><td>+16</td><td>+8</td><td>+16</td></tr></table>
+<p class="rsub">Bonos</p>
+<ul class="rlist">
+<li><b>Ganador de grupo:</b> +6 por cada grupo acertado</li>
+<li><b>Equipo que avanza</b> (por cada equipo que pusiste en la ronda correcta): 16avos +4 · octavos +4 · cuartos +6 · semifinales +8</li>
+<li><b>Finalista:</b> +10 cada uno · <b>Campeón:</b> +25</li></ul>
+<p class="rnote">"Cada goleo": los goles de local y visitante cuentan por separado. Los bonos de avance se ganan por equipo, sin importar el marcador del partido. Partidos sin pronóstico = 0 puntos. Los clasificados y ganadores de grupo se deciden con los criterios FIFA (puntos → diferencia de goles → goles a favor → head-to-head). Un bracket perfecto suma 1301 puntos.</p>
+</div>
 <div class="foot">Resultados oficiales · solo lectura · se actualiza automáticamente · <span id="upd">—</span></div>
 </div>
 <script>
@@ -237,6 +261,7 @@ function compute(){let sc={},det={};ENT.forEach(e=>{sc[e]={m:0,gw:0,ko:0,bn:0};d
  return{sc,played,koPlayed,det};}
 let bonusOpen={};
 function toggleBonus(e){bonusOpen[e]=!bonusOpen[e];let d=document.getElementById('bd-'+e),c=document.getElementById('bcar-'+e);if(d)d.style.display=bonusOpen[e]?'block':'none';if(c)c.textContent=bonusOpen[e]?'▾':'▸';}
+function toggleRules(){let r=document.getElementById('rules'),c=document.getElementById('rulecar');let o=r.style.display==='none';r.style.display=o?'block':'none';if(c)c.textContent=o?'▾':'▸';}
 function renderLB(){let{sc,played,koPlayed,det}=compute();let arr=ENT.map(e=>({e,m:sc[e].m,gw:sc[e].gw,ko:sc[e].ko,bn:sc[e].bn,t:sc[e].m+sc[e].gw+sc[e].ko+sc[e].bn}));
  arr.sort((a,b)=>b.t-a.t);let mx=Math.max(1,...arr.map(a=>a.t));
  let h='';arr.forEach((r,i)=>{let me=r.e==='LF';let comp=DATA.preds[r.e];let blanks=Object.values(comp).filter(v=>v[0]==null&&v[1]==null).length;
