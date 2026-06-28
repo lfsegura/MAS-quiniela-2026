@@ -73,11 +73,10 @@ Group-stage-only scoring (used while knockouts are pending) = the 72 group match
 All paths are under the OneDrive folder:
 `/Users/lfsegura/Library/CloudStorage/OneDrive-IncodeTechnologies,Inc/Documents/Claude/Projects/`
 
-- **`Quiniela 2026 - Seguimiento Fase de Grupos.html`** — the main interactive tracker (group stage).
-  Group view + date view toggle, per-group standings, a knockout view, leaderboard. Editable (organizer enters
-  results). Styled to Incode brand. A scheduled task updates it twice daily.
-- **`quiniela-web/index.html`** — read-only copy of the tracker for sharing (score boxes render as plain numbers,
-  no editing). For a quick Netlify Drop deploy.
+- **`quiniela-github/` is the SINGLE SOURCE OF TRUTH** — the auto-updating public site (live at
+  https://lfsegura.github.io/MAS-quiniela-2026/). Maintain only this one.
+- **`_deprecated/`** — the two old duplicate trackers (`Quiniela 2026 - Seguimiento Fase de Grupos.html` and
+  `quiniela-web/`) were retired here on 2026-06-28 (they had to be hand-synced on every change). Do not edit; backups only.
 - **`quiniela-github/`** — the auto-updating public site bundle (THIS folder):
   - `index.html` — read-only tracker that overlays `results.json` on load and self-refreshes every 30 min.
     `load()` routes `results.json.group` into `actual` (group `mid`s) and `results.json.ko` into `koActual`.
@@ -94,6 +93,9 @@ All paths are under the OneDrive folder:
     FINISHED value is kept. So you only ever ADD a correction — cleanup is automatic. (The Action commits overrides.json
     too, so prunes persist.)
   - `scripts/fixtures.json` — `{fixtures:{mid:[homeES,awayES]}, alias:{teamES:[english aliases]}}` for name matching.
+  - `scripts/check_ko.py` — knockout sanity-check. Prints each knockout match as published (teams/score/advancing
+    team) to eyeball vs reality; with `FOOTBALL_DATA_TOKEN` set it flags published-vs-API mismatches and penalty
+    games. Run before trusting a knockout result: `FOOTBALL_DATA_TOKEN=xxx python3 scripts/check_ko.py`.
   - `.github/workflows/update.yml` — cron (every 2h) + manual; runs the fetcher and commits.
   - `setup_github.sh` — one-shot: creates the repo, pushes, sets the API secret, enables Pages, prints the URL.
   - `README.md` — setup steps.
