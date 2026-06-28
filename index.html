@@ -157,7 +157,9 @@ input.sc{width:1.8em;text-align:center;min-width:0}.flag{height:14px;width:auto;
 <div class="section-t">Clasificación general</div><div class="lb" id="lb"></div>
 <p class="lblegend">El puntaje de cada quien = <b>marcadores</b> (aciertos de signo y goles) + <b>bonos</b> (ganador de grupo y avance de equipos). Toca un nombre para ver el desglose completo.</p>
 <div class="section-t" style="display:flex;align-items:center;justify-content:space-between;gap:10px">Partidos<span class="viewtoggle"><button data-v="group" onclick="setView('group')">Por grupos</button><button data-v="date" onclick="setView('date')">Por fecha</button></span></div><div class="grid" id="groups"></div>
-<div class="section-t">Eliminatorias</div><div class="grid" id="ko"></div>
+<div class="section-t">Eliminatorias</div>
+<p class="lblegend">Los equipos que aparecen junto a cada participante son su <b>pronóstico</b> para esa casilla del bracket; pueden no coincidir con el cruce real. El marcador se califica <b>por casilla</b>: tu marcador contra el resultado real de ese partido, sin importar qué equipos lo jueguen.</p>
+<div class="grid" id="ko"></div>
 <div class="section-t">Cómo se calculan los puntos</div>
 <div id="rules" class="rules">
 <p class="rsub">Marcadores — en cada partido</p>
