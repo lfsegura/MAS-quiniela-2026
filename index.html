@@ -169,7 +169,7 @@ input.sc{width:1.8em;text-align:center;min-width:0}.flag{height:14px;width:auto;
 <p class="rsub">Bonos</p>
 <ul class="rlist">
 <li><b>Ganador de grupo:</b> +6 por cada grupo acertado</li>
-<li><b>Equipo que avanza</b> (por cada equipo que pusiste en la ronda correcta): 16avos +4 · octavos +4 · cuartos +6 · semifinales +8</li>
+<li><b>Equipo que avanza</b> (por cada equipo que pusiste en la ronda correcta): 16avos (R32) +4 · octavos (R16) +4 · cuartos +6 · semifinales +8</li>
 <li><b>Finalista:</b> +10 cada uno · <b>Campeón:</b> +25</li></ul>
 <p class="rnote">"Cada goleo": los goles de local y visitante cuentan por separado. Los bonos de avance se ganan por equipo, sin importar el marcador del partido. Partidos sin pronóstico = 0 puntos. Los clasificados y ganadores de grupo se deciden con los criterios FIFA (puntos → diferencia de goles → goles a favor → head-to-head). Un bracket perfecto suma 1301 puntos.</p>
 </div>
@@ -266,8 +266,8 @@ function compute(){let sc={},det={};ENT.forEach(e=>{sc[e]={m:0,gw:0,ko:0,bn:0};d
  Object.keys(ranges).forEach(k=>{let[a,b]=ranges[k];let any=false;for(let m=a;m<=b;m++)if(koActual[m]||koActual[String(m)])any=true;actSets[k]=any?teamsIn(koActual,a,b):null;});
  let fin=koActual[104]||koActual['104'];let finalTeams=(fin&&fin[0]&&fin[1])?new Set([fin[0],fin[1]]):null,champ=fin?koWinner(fin):null;
  ENT.forEach(e=>{let ko=koPreds[e]||{};
-  if(r32){let c=0;teamsIn(ko,73,88).forEach(t=>{if(r32.has(t))c++;});sc[e].bn+=c*KOBON.r32;det[e].push({lbl:'Avance a 16avos',calc:c+' × 4',pts:c*KOBON.r32});}
-  [['Avance a octavos','r16',89,96,'R16'],['Avance a cuartos','qf',97,100,'QF'],['Avance a semifinales','sf',101,102,'SF']].forEach(([lbl,bk,a,b,rk])=>{if(actSets[rk]){let c=0;teamsIn(ko,a,b).forEach(t=>{if(actSets[rk].has(t))c++;});sc[e].bn+=c*KOBON[bk];det[e].push({lbl,calc:c+' × '+KOBON[bk],pts:c*KOBON[bk]});}});
+  if(r32){let c=0;teamsIn(ko,73,88).forEach(t=>{if(r32.has(t))c++;});sc[e].bn+=c*KOBON.r32;det[e].push({lbl:'Avance a 16avos (ronda de 32)',calc:c+' × 4',pts:c*KOBON.r32});}
+  [['Avance a octavos (ronda de 16)','r16',89,96,'R16'],['Avance a cuartos','qf',97,100,'QF'],['Avance a semifinales','sf',101,102,'SF']].forEach(([lbl,bk,a,b,rk])=>{if(actSets[rk]){let c=0;teamsIn(ko,a,b).forEach(t=>{if(actSets[rk].has(t))c++;});sc[e].bn+=c*KOBON[bk];det[e].push({lbl,calc:c+' × '+KOBON[bk],pts:c*KOBON[bk]});}});
   if(finalTeams){let c=0;teamsIn(ko,104,104).forEach(t=>{if(finalTeams.has(t))c++;});sc[e].bn+=c*KOBON.final;det[e].push({lbl:'Finalistas',calc:c+' × 10',pts:c*KOBON.final});}
   if(champ){let f=ko[104]||ko['104'];let hit=f&&koWinner(f)===champ;if(hit)sc[e].bn+=KOBON.champ;det[e].push({lbl:'Campeón',calc:hit?'acierto':'—',pts:hit?KOBON.champ:0});}});
  return{sc,played,koPlayed,det};}
