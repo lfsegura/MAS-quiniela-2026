@@ -334,7 +334,7 @@ function koPendingMsg(){return anyKoPreds()?'':`<div class="gc"><div class="mt">
 function koPicks(f,a,pl){if(!anyKoPreds())return '';let H='<div class="picks">';ENT_SORTED.forEach(e=>{let pr=(koPreds[e]||{})[f.mid];
   if(!pr){H+=`<span class="chip ${e==='LF'?'me':''}"><span class="who">${e}</span><span class="res"><span class="dash">–</span></span></span>`;return;}
   let pt=pl?koMp([pr[2],pr[3]],[a[2],a[3]],f.round):null;
-  let ps=`${pr[0]?ab(pr[0]):'?'} ${pr[2]==null?'–':pr[2]}-${pr[3]==null?'–':pr[3]} ${pr[1]?ab(pr[1]):'?'}`;
+  let ps=`${pr[2]==null?'–':pr[2]}-${pr[3]==null?'–':pr[3]}`;
   H+=`<span class="chip ${e==='LF'?'me':''}"><span class="who">${e}</span><span class="res">${ps}${pt!=null?`<span class="pill ${pcls(pt)}">${pt}</span>`:''}</span></span>`;});return H+'</div>';}
 function renderKnockouts(){let el=document.getElementById('ko');if(!el)return;el.className=view==='date'?'':'grid';el.innerHTML=view==='date'?koByDate():koByRound();}
 function koByRound(){let rounds=[['R32','Dieciseisavos'],['R16','Octavos'],['QF','Cuartos'],['SF','Semifinales'],['F','Final y 3.º puesto']];let H=koPendingMsg();
