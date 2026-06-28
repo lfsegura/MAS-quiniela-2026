@@ -71,19 +71,23 @@ for m in matches:
     group[str(mid)]=res; g_added+=1; api_final_group[str(mid)]=res
 
 # --- knockouts: assign each stage's matches to its mid slots in kickoff order ---
-k_added=0; unmatched_team=0; api_final_ko={}
+k_added=0; unmatched_team=0; k_sched=0; api_final_ko={}
 for stage,mids in STAGE_MIDS.items():
     stage_matches=sorted([m for m in matches if m.get('stage')==stage],
                          key=lambda m:(m.get('utcDate') or '', m.get('id') or 0))
     for mid,m in zip(mids, stage_matches):
-        if m.get('status')!='FINISHED': continue
         h=match_team(m['homeTeam'].get('name')); a=match_team(m['awayTeam'].get('name'))
-        ft=m.get('score',{}).get('fullTime',{}); hg,ag=ft.get('home'),ft.get('away')
-        if hg is None or ag is None: continue
-        if not h or not a: unmatched_team+=1; continue
-        w=m.get('score',{}).get('winner')   # HOME_TEAM / AWAY_TEAM / DRAW
-        adv=h if w=='HOME_TEAM' else a if w=='AWAY_TEAM' else None
-        ko[str(mid)]=[h,a,hg,ag,adv]; k_added+=1; api_final_ko[str(mid)]=[h,a,hg,ag,adv]
+        if m.get('status')=='FINISHED':
+            ft=m.get('score',{}).get('fullTime',{}); hg,ag=ft.get('home'),ft.get('away')
+            if hg is None or ag is None: continue
+            if not h or not a: unmatched_team+=1; continue
+            w=m.get('score',{}).get('winner')   # HOME_TEAM / AWAY_TEAM / DRAW
+            adv=h if w=='HOME_TEAM' else a if w=='AWAY_TEAM' else None
+            ko[str(mid)]=[h,a,hg,ag,adv]; k_added+=1; api_final_ko[str(mid)]=[h,a,hg,ag,adv]
+        elif h and a:
+            # matchup is set but not played yet -> show the teams (no score). Scoring ignores
+            # entries with no goals (act[2]==null); advancement teams reflect who reached the round.
+            ko[str(mid)]=[h,a,None,None,None]; k_sched+=1
 
 # --- manual overrides: corrections for API errors / early-show. Applied LAST so they win and
 #     persist across fetches. Edit overrides.json to add; see its _comment for the format.
@@ -112,7 +116,7 @@ except Exception as e:
 out={'group':group,'ko':ko}
 json.dump(out,open(os.path.join(ROOT,'results.json'),'w'),ensure_ascii=False,indent=0)
 print(f'updated results.json — group: {g_added} matched ({len(group)} total) · '
-      f'ko: {k_added} matched ({len(ko)} total)'
+      f'ko: {k_added} played, {k_sched} matchups scheduled ({len(ko)} total)'
       + (f' · overrides applied: {ov_g} group, {ov_k} ko' if (ov_g or ov_k) else '')
       + (f' · overrides auto-removed (API now final & matching): {", ".join(pruned)}' if pruned else '')
       + (f' · {unmatched_team} ko match(es) had unrecognized team names' if unmatched_team else ''))
