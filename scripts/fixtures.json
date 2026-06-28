@@ -455,5 +455,170 @@
    "qatar",
    "catar"
   ]
+ },
+ "groups": {
+  "A": [
+   "Corea del Sur",
+   "México",
+   "República Checa",
+   "Sudáfrica"
+  ],
+  "B": [
+   "Bosnia y Herzegovina",
+   "Canadá",
+   "Qatar",
+   "Suiza"
+  ],
+  "C": [
+   "Brasil",
+   "Escocia",
+   "Haití",
+   "Marruecos"
+  ],
+  "D": [
+   "Australia",
+   "Estados Unidos",
+   "Paraguay",
+   "Turquía"
+  ],
+  "E": [
+   "Alemania",
+   "Costa de Marfil",
+   "Curazao",
+   "Ecuador"
+  ],
+  "F": [
+   "Holanda",
+   "Japón",
+   "Suecia",
+   "Túnez"
+  ],
+  "G": [
+   "Bélgica",
+   "Egipto",
+   "Irán",
+   "Nueva Zelanda"
+  ],
+  "H": [
+   "Arabia Saudita",
+   "Cabo Verde",
+   "España",
+   "Uruguay"
+  ],
+  "I": [
+   "Francia",
+   "Irak",
+   "Noruega",
+   "Senegal"
+  ],
+  "J": [
+   "Argelia",
+   "Argentina",
+   "Austria",
+   "Jordania"
+  ],
+  "K": [
+   "Colombia",
+   "Portugal",
+   "RD Congo",
+   "Uzbekistán"
+  ],
+  "L": [
+   "Croacia",
+   "Ghana",
+   "Inglaterra",
+   "Panamá"
+  ]
+ },
+ "ko_wiring": {
+  "_comment": "Knockouts are keyed by BRACKET POSITION, not kickoff order. r32: home-anchor group-position per slot (e.g. '1I'=winner Group I). feeders: [homeFeederMid, awayFeederMid] (winner of each). third/final: losers/winners of the two SF mids. The fetcher resolves the expected home team and finds the API match containing it, so predictions and actuals share the same bracket pairing.",
+  "r32": {
+   "73": "2A",
+   "74": "1E",
+   "75": "1F",
+   "76": "1C",
+   "77": "1I",
+   "78": "2E",
+   "79": "1A",
+   "80": "1L",
+   "81": "1D",
+   "82": "1G",
+   "83": "2K",
+   "84": "1H",
+   "85": "1B",
+   "86": "1J",
+   "87": "1K",
+   "88": "2D"
+  },
+  "feeders": {
+   "89": [
+    74,
+    77
+   ],
+   "90": [
+    73,
+    75
+   ],
+   "91": [
+    76,
+    78
+   ],
+   "92": [
+    79,
+    80
+   ],
+   "93": [
+    83,
+    84
+   ],
+   "94": [
+    81,
+    82
+   ],
+   "95": [
+    86,
+    88
+   ],
+   "96": [
+    85,
+    87
+   ],
+   "97": [
+    89,
+    90
+   ],
+   "98": [
+    93,
+    94
+   ],
+   "99": [
+    91,
+    92
+   ],
+   "100": [
+    95,
+    96
+   ],
+   "101": [
+    97,
+    98
+   ],
+   "102": [
+    99,
+    100
+   ]
+  },
+  "third": {
+   "103": [
+    101,
+    102
+   ]
+  },
+  "final": {
+   "104": [
+    101,
+    102
+   ]
+  }
  }
 }

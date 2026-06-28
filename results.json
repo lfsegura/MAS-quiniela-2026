@@ -298,36 +298,36 @@ null,
 null
 ],
 "74": [
-"Brasil",
-"Japón",
-null,
-null,
-null
-],
-"75": [
 "Alemania",
 "Paraguay",
 null,
 null,
 null
 ],
-"76": [
+"75": [
 "Holanda",
 "Marruecos",
 null,
 null,
 null
 ],
+"76": [
+"Brasil",
+"Japón",
+null,
+null,
+null
+],
 "77": [
-"Costa de Marfil",
-"Noruega",
+"Francia",
+"Suecia",
 null,
 null,
 null
 ],
 "78": [
-"Francia",
-"Suecia",
+"Costa de Marfil",
+"Noruega",
 null,
 null,
 null
@@ -347,29 +347,29 @@ null,
 null
 ],
 "81": [
-"Bélgica",
-"Senegal",
-null,
-null,
-null
-],
-"82": [
 "Estados Unidos",
 "Bosnia y Herzegovina",
 null,
 null,
 null
 ],
+"82": [
+"Bélgica",
+"Senegal",
+null,
+null,
+null
+],
 "83": [
-"España",
-"Austria",
+"Portugal",
+"Croacia",
 null,
 null,
 null
 ],
 "84": [
-"Portugal",
-"Croacia",
+"España",
+"Austria",
 null,
 null,
 null
@@ -382,22 +382,22 @@ null,
 null
 ],
 "86": [
-"Australia",
-"Egipto",
-null,
-null,
-null
-],
-"87": [
 "Argentina",
 "Cabo Verde",
 null,
 null,
 null
 ],
-"88": [
+"87": [
 "Colombia",
 "Ghana",
+null,
+null,
+null
+],
+"88": [
+"Australia",
+"Egipto",
 null,
 null,
 null

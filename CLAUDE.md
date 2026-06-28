@@ -83,9 +83,14 @@ All paths are under the OneDrive folder:
   - `results.json` — `{ "group": { "<mid>": [homeGoals, awayGoals] }, "ko": { "<mid>": [homeES, awayES, homeGoals, awayGoals, advancingTeamES|null] } }`;
     rewritten by the Action. (Legacy flat `{ "<mid>": [h,a] }` is still read as the group block for backward compat.)
   - `scripts/fetch_results.py` — pulls FINISHED matches from football-data.org and writes results.json. Group
-    matches (mid 1–72) matched by team pair; knockouts (mid 73–104) matched by `stage` + chronological order onto
-    fixed mid slots (teams unknown until the bracket resolves), with the advancing team taken from the API `winner`
-    field (handles penalty shootouts). Set `FOOTBALL_DATA_FILE=<json>` to run it offline against a saved snapshot.
+    matches (mid 1–72) matched by team pair; knockouts (mid 73–104) matched by **bracket position** (NOT kickoff
+    order). Each slot's wiring lives in `fixtures.json.ko_wiring`: R32 home is a fixed group position (e.g. mid77 =
+    "1I" = winner of Group I); later rounds reference feeder mids. The fetcher computes group standings, resolves
+    each slot's expected home team, finds the API match containing it, and orients home/away to the wiring — so a
+    prediction and its actual always refer to the SAME pairing. (Earlier versions mapped by chronological kickoff
+    order, which silently mis-mapped 12/16 R32 slots, because FIFA's *schedule* order ≠ the bracket *slot* order.)
+    Advancing team comes from the API `winner` field (handles penalty shootouts). Set `FOOTBALL_DATA_FILE=<json>`
+    to run it offline against a saved snapshot.
   - `overrides.json` — manual corrections for when the API reports a wrong score (or to show a just-finished match
     before the feed flips to FINISHED). `{group:{mid:[h,a]}, ko:{mid:[...]}}`. The fetcher applies these LAST (override
     wins and persists). **Auto-prune rule:** the fetcher removes an override automatically once the API reports that
@@ -146,8 +151,9 @@ All paths are under the OneDrive folder:
 - **Verify live-score matching on first Action run:** football-data.org may spell teams differently
   (e.g., Türkiye, Czechia, Korea Republic, Côte d'Ivoire). If a team doesn't match, add the variant to the alias
   list in `scripts/fixtures.json` (and it flows to the fetcher). Group-stage matching is by team pair.
-- **Auto-fetch covers knockouts** (done): the fetcher maps R32→Final results into `results.json.ko` by stage +
-  kickoff order. Knockout *scorelines* and advancement/champion bonuses score automatically once `koActual` fills —
+- **Auto-fetch covers knockouts** (done): the fetcher maps R32→Final results into `results.json.ko` by **bracket
+  position** (see §5 — the wiring in `fixtures.json.ko_wiring`). Knockout *scorelines* and advancement/champion
+  bonuses score automatically once `koActual` fills —
   but knockout *points* only appear after participants' `koPreds` brackets are entered (still being collected).
 - **When Toño's full file arrives:** add his predictions to the tracker `preds`/`predGW`, then run the
   full-tournament Monte Carlo (see below) across all six on equal footing.

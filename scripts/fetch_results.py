@@ -10,16 +10,19 @@ import os,json,unicodedata,urllib.request,sys
 HERE=os.path.dirname(os.path.abspath(__file__)); ROOT=os.path.dirname(HERE)
 cfg=json.load(open(os.path.join(HERE,'fixtures.json')))
 FIX={int(k):v for k,v in cfg['fixtures'].items()}; ALIAS=cfg['alias']
+GROUPS=cfg['groups']                      # {group letter: [4 team names]}
+WIR=cfg['ko_wiring']                       # bracket wiring (positions / feeder mids)
+R32_HOME={int(k):v for k,v in WIR['r32'].items()}        # mid -> home group-position code e.g. "1I"
+FEEDERS={int(k):v for k,v in WIR['feeders'].items()}     # mid -> [homeFeederMid, awayFeederMid]
+THIRD={int(k):v for k,v in WIR['third'].items()}         # mid -> [sfMidA, sfMidB] (losers)
+FINAL={int(k):v for k,v in WIR['final'].items()}         # mid -> [sfMidA, sfMidB] (winners)
 
-# Knockout stage -> the mid slots it fills, in chronological (kickoff) order.
-STAGE_MIDS={
- 'LAST_32':list(range(73,89)),   # 16 matches  -> R32  (mid 73-88)
- 'LAST_16':list(range(89,97)),   #  8 matches  -> R16  (mid 89-96)
- 'QUARTER_FINALS':list(range(97,101)),  # 4 -> QF (mid 97-100)
- 'SEMI_FINALS':[101,102],        #  2 matches  -> SF   (mid 101-102)
- 'THIRD_PLACE':[103],            #  1 match    -> 3rd  (mid 103)
- 'FINAL':[104],                  #  1 match    -> Final(mid 104)
-}
+# Which stage each knockout mid belongs to (used to pick the right API matches).
+MID_STAGE={**{m:'LAST_32' for m in range(73,89)},**{m:'LAST_16' for m in range(89,97)},
+           **{m:'QUARTER_FINALS' for m in range(97,101)},101:'SEMI_FINALS',102:'SEMI_FINALS',
+           103:'THIRD_PLACE',104:'FINAL'}
+# Process knockout slots in bracket order so feeder winners are known before later rounds.
+KO_ORDER=list(range(73,105))
 
 def norm(x):
     x=unicodedata.normalize('NFKD',x).encode('ascii','ignore').decode().lower()
@@ -70,24 +73,82 @@ for m in matches:
     else: continue
     group[str(mid)]=res; g_added+=1; api_final_group[str(mid)]=res
 
-# --- knockouts: assign each stage's matches to its mid slots in kickoff order ---
-k_added=0; unmatched_team=0; k_sched=0; api_final_ko={}
-for stage,mids in STAGE_MIDS.items():
-    stage_matches=sorted([m for m in matches if m.get('stage')==stage],
-                         key=lambda m:(m.get('utcDate') or '', m.get('id') or 0))
-    for mid,m in zip(mids, stage_matches):
+# --- group standings (FIFA order: pts, GD, GF, then head-to-head, then name) -> position codes ---
+#     Needed to anchor R32 slots: each slot's HOME is a fixed group position (e.g. "1I" = winner I).
+def standings(g):
+    teams=GROUPS[g]; T={t:{'pts':0,'gf':0,'ga':0} for t in teams}; ms=[]
+    for mid,(h,a) in FIX.items():
+        if h in T and a in T and str(mid) in group:
+            hg,ag=group[str(mid)]; ms.append((h,a,hg,ag))
+            T[h]['gf']+=hg;T[h]['ga']+=ag;T[a]['gf']+=ag;T[a]['ga']+=hg
+            if hg>ag:T[h]['pts']+=3
+            elif ag>hg:T[a]['pts']+=3
+            else:T[h]['pts']+=1;T[a]['pts']+=1
+    if len(ms)<6: return None        # group not complete yet
+    for t in T: T[t]['gd']=T[t]['gf']-T[t]['ga']
+    order=sorted(teams,key=lambda t:(-T[t]['pts'],-T[t]['gd'],-T[t]['gf'],t))
+    i=0                              # break pts/GD/GF ties by head-to-head among the tied teams
+    while i<len(order):
+        j=i+1
+        while j<len(order) and (T[order[j]]['pts'],T[order[j]]['gd'],T[order[j]]['gf'])==(T[order[i]]['pts'],T[order[i]]['gd'],T[order[i]]['gf']): j+=1
+        if j-i>1:
+            cl=order[i:j]; M={t:{'p':0,'gd':0,'gf':0} for t in cl}
+            for h,a,hg,ag in ms:
+                if h in M and a in M:
+                    M[h]['gf']+=hg;M[h]['gd']+=hg-ag;M[a]['gf']+=ag;M[a]['gd']+=ag-hg
+                    if hg>ag:M[h]['p']+=3
+                    elif ag>hg:M[a]['p']+=3
+                    else:M[h]['p']+=1;M[a]['p']+=1
+            order[i:j]=sorted(cl,key=lambda t:(-M[t]['p'],-M[t]['gd'],-M[t]['gf'],t))
+        i=j
+    return order
+POS={}                               # "1A"/"2A"/"3A" -> team (for completed groups)
+for g in GROUPS:
+    o=standings(g)
+    if o: POS['1'+g],POS['2'+g],POS['3'+g]=o[0],o[1],o[2]
+
+# --- knockouts: key each slot by BRACKET POSITION (not kickoff order) so a prediction and its
+#     actual refer to the SAME bracket pairing. Resolve each slot's expected HOME team, then find
+#     the API match (of that round) containing it and orient home/away to the wiring. ---
+def api_by_stage(stage):
+    out=[]
+    for m in matches:
+        if m.get('stage')!=stage: continue
         h=match_team(m['homeTeam'].get('name')); a=match_team(m['awayTeam'].get('name'))
-        if m.get('status')=='FINISHED':
-            ft=m.get('score',{}).get('fullTime',{}); hg,ag=ft.get('home'),ft.get('away')
-            if hg is None or ag is None: continue
-            if not h or not a: unmatched_team+=1; continue
-            w=m.get('score',{}).get('winner')   # HOME_TEAM / AWAY_TEAM / DRAW
-            adv=h if w=='HOME_TEAM' else a if w=='AWAY_TEAM' else None
-            ko[str(mid)]=[h,a,hg,ag,adv]; k_added+=1; api_final_ko[str(mid)]=[h,a,hg,ag,adv]
-        elif h and a:
-            # matchup is set but not played yet -> show the teams (no score). Scoring ignores
-            # entries with no goals (act[2]==null); advancement teams reflect who reached the round.
-            ko[str(mid)]=[h,a,None,None,None]; k_sched+=1
+        ft=m.get('score',{}).get('fullTime',{}); w=m.get('score',{}).get('winner')
+        out.append({'h':h,'a':a,'hg':ft.get('home'),'ag':ft.get('away'),'w':w,'st':m.get('status')})
+    return out
+API_STAGE={st:api_by_stage(st) for st in set(MID_STAGE.values())}
+def adv_of(mid):                     # advancing team recorded for a slot (None if undecided)
+    e=ko.get(str(mid)); return e[4] if e else None
+def loser_of(mid):
+    e=ko.get(str(mid))
+    if not e or e[4] is None: return None
+    return e[1] if e[4]==e[0] else e[0]
+
+k_added=0; unmatched_team=0; k_sched=0; api_final_ko={}
+for mid in KO_ORDER:
+    stage=MID_STAGE[mid]
+    # expected HOME (and, for 3rd/final, AWAY) team for this slot, from the bracket wiring
+    if mid in R32_HOME: home_exp,away_exp=POS.get(R32_HOME[mid]),None
+    elif mid in FEEDERS: home_exp,away_exp=adv_of(FEEDERS[mid][0]),adv_of(FEEDERS[mid][1])
+    elif mid in THIRD: home_exp,away_exp=loser_of(THIRD[mid][0]),loser_of(THIRD[mid][1])
+    elif mid in FINAL: home_exp,away_exp=adv_of(FINAL[mid][0]),adv_of(FINAL[mid][1])
+    else: continue
+    if not home_exp: continue        # feeders/group not resolved yet -> slot stays empty
+    # find the API match (this round) that contains the expected home team
+    m=next((x for x in API_STAGE[stage] if home_exp in (x['h'],x['a'])),None)
+    if not m: continue
+    H,A=m['h'],m['a']; hg,ag,w=m['hg'],m['ag'],m['w']
+    if A==home_exp:                  # orient to wiring's home/away (swap API orientation if needed)
+        H,A=A,H
+        if hg is not None: hg,ag=ag,hg
+        w={'HOME_TEAM':'AWAY_TEAM','AWAY_TEAM':'HOME_TEAM'}.get(w,w)
+    if m['st']=='FINISHED' and hg is not None and ag is not None:
+        adv=H if w=='HOME_TEAM' else A if w=='AWAY_TEAM' else None
+        ko[str(mid)]=[H,A,hg,ag,adv]; k_added+=1; api_final_ko[str(mid)]=[H,A,hg,ag,adv]
+    elif H and A:                    # matchup set but not played -> show teams, no score
+        ko[str(mid)]=[H,A,None,None,None]; k_sched+=1
 
 # --- manual overrides: corrections for API errors / early-show. Applied LAST so they win and
 #     persist across fetches. Edit overrides.json to add; see its _comment for the format.
