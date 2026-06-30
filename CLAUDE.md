@@ -80,7 +80,8 @@ All paths are under the OneDrive folder:
 - **`quiniela-github/`** — the auto-updating public site bundle (THIS folder):
   - `index.html` — read-only tracker that overlays `results.json` on load and self-refreshes every 30 min.
     `load()` routes `results.json.group` into `actual` (group `mid`s) and `results.json.ko` into `koActual`.
-  - `results.json` — `{ "group": { "<mid>": [homeGoals, awayGoals] }, "ko": { "<mid>": [homeES, awayES, homeGoals, awayGoals, advancingTeamES|null] } }`;
+  - `results.json` — `{ "group": { "<mid>": [homeGoals, awayGoals] }, "ko": { "<mid>": [homeES, awayES, homeGoals, awayGoals, advancingTeamES|null, penH?, penA?] } }`;
+    Knockout `homeGoals/awayGoals` = **on-pitch** result (regulation + extra time) — a shootout is the level draw; optional `penH/penA` carry the shootout tally (shown FIFA-style `1(4)`). `advancingTeamES` = penalty winner (null if the feed's shootout is undecided). Penalties never affect scoreline points, only advancement bonuses.
     rewritten by the Action. (Legacy flat `{ "<mid>": [h,a] }` is still read as the group block for backward compat.)
   - `scripts/fetch_results.py` — pulls FINISHED matches from football-data.org and writes results.json. Group
     matches (mid 1–72) matched by team pair; knockouts (mid 73–104) matched by **bracket position** (NOT kickoff

@@ -119,6 +119,7 @@ h1{letter-spacing:-.02em;color:var(--g600);font-weight:600}
 
 /* read-only published mode */
 .sc{pointer-events:none;border:none!important;background:transparent!important;box-shadow:none!important;color:var(--g600)!important;font-weight:600;width:auto;min-width:12px;padding:0;height:auto}
+.pk{font-size:.72em;color:var(--g400);font-weight:600;margin-left:1px;vertical-align:baseline}
 .sc:focus{outline:none!important}.toolbar{display:none!important}
 input.sc{width:1.8em;text-align:center;min-width:0}.flag{height:14px;width:auto;border-radius:2px;border:1px solid rgba(0,0,0,.12);vertical-align:middle;display:inline-block;object-fit:cover}
 .lbitem{display:flex;flex-direction:column}.row{cursor:pointer}
@@ -331,6 +332,8 @@ function renderGroups(){let H='';groups.forEach(g=>{let st=standings(g);
  document.getElementById('groups').innerHTML=H;}
 function h12(t){let[H,M]=t.split(':').map(Number),ap=H<12?'a.m.':'p.m.',h=H%12||12;return h+':'+String(M).padStart(2,'0')+' '+ap;}
 function koWhen(f){return `<div class="when"><span class="wdate">${f.md}</span><span>${h12(f.hm)} MEX</span></div>`;}
+// knockout score cell: FIFA penalty-shootout format e.g. 1(4) = 1 in regulation, 4 in the shootout
+function koSc(g,p,pl){return `<span class="sc ${pl?'played':''}">${g==null?'–':g}${p!=null?`<span class="pk">(${p})</span>`:''}</span>`;}
 function anyKoPreds(){return ENT.some(e=>Object.keys(koPreds[e]||{}).length>0);}
 function koPendingMsg(){return anyKoPreds()?'':`<div class="gc"><div class="mt"><div class="m" style="text-align:center;color:var(--g400)">Los pronósticos de eliminatorias se cargan cuando los participantes entreguen su quiniela. El calendario y la puntuación ya están listos.</div></div></div>`;}
 function koPicks(f,a,pl){if(!anyKoPreds())return '';let H='<div class="picks">';ENT_SORTED.forEach(e=>{let pr=(koPreds[e]||{})[f.mid];
@@ -344,7 +347,7 @@ function koByRound(){let rounds=[['R32','R32'],['R16','R16'],['QF','QF'],['SF','
   H+=`<div class="gc"><div class="gch"><b>${name}</b><span class="badge grp" style="background:var(--g100);border-color:var(--g200);color:var(--g400)">${KOPTS[rk][0]}/${KOPTS[rk][1]}/${KOPTS[rk][2]} pts</span></div><div class="mt">`;
   fs.forEach(f=>{let a=koActual[f.mid]||koActual[String(f.mid)]||[null,null,null,null,null];let pl=a[2]!=null;let hn=a[0]||'Por definir',an=a[1]||'Por definir';
    H+=`<div class="m">${koWhen(f)}<div class="mr"><div class="tm h"><span class="nme">${hn}</span><span class="fl">${a[0]?fl(a[0]):''}</span></div>`+
-     `<div class="sb"><span class="sc ${pl?'played':''}">${a[2]==null?'–':a[2]}</span><span class="dash">·</span><span class="sc ${pl?'played':''}">${a[3]==null?'–':a[3]}</span></div>`+
+     `<div class="sb">${koSc(a[2],a[5],pl)}<span class="dash">·</span>${koSc(a[3],a[6],pl)}</div>`+
      `<div class="tm"><span class="fl">${a[1]?fl(a[1]):''}</span><span class="nme">${an}</span></div></div>`+koPicks(f,a,pl)+`</div>`;});
   H+='</div></div>';});return H;}
 function koByDate(){let fs=koFix.slice().sort((x,y)=>x.dt<y.dt?-1:x.dt>y.dt?1:0);let H=koPendingMsg(),cur=null;
@@ -352,7 +355,7 @@ function koByDate(){let fs=koFix.slice().sort((x,y)=>x.dt<y.dt?-1:x.dt>y.dt?1:0)
   let a=koActual[f.mid]||koActual[String(f.mid)]||[null,null,null,null,null];let pl=a[2]!=null;let hn=a[0]||'Por definir',an=a[1]||'Por definir';
   H+=`<div class="drow"><div class="top"><span class="gbadge">${f.label}</span><span class="dtime">${h12(f.hm)} MEX</span></div>`+
      `<div class="mr"><div class="tm h"><span class="nme">${hn}</span><span class="fl">${a[0]?fl(a[0]):''}</span></div>`+
-     `<div class="sb"><span class="sc ${pl?'played':''}">${a[2]==null?'–':a[2]}</span><span class="dash">·</span><span class="sc ${pl?'played':''}">${a[3]==null?'–':a[3]}</span></div>`+
+     `<div class="sb">${koSc(a[2],a[5],pl)}<span class="dash">·</span>${koSc(a[3],a[6],pl)}</div>`+
      `<div class="tm"><span class="fl">${a[1]?fl(a[1]):''}</span><span class="nme">${an}</span></div></div>`+koPicks(f,a,pl)+`</div>`;});
  if(cur!==null)H+='</div>';return H;}
 

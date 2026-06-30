@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 # Pulls FINISHED World Cup results from football-data.org and writes ../results.json
-#   results.json = {"group": {"<mid>":[h,a]}, "ko": {"<mid>":[homeES,awayES,h,a,advES]}}
+#   results.json = {"group": {"<mid>":[h,a]}, "ko": {"<mid>":[homeES,awayES,h,a,advES(,penH,penA)]}}
+#   Knockout scoreline (h,a) = on-pitch result (regulation+extra time), NEVER the penalty-inflated
+#   fullTime. A shootout is recorded as the level draw + optional [penH,penA] tally (FIFA "1(4)").
+#   advES = advancing team (penalty winner); left null if the feed's shootout is tied/undecided.
 # Group matches (mid 1-72) are matched by team pair. Knockout matches (mid 73-104) are
 # matched by stage + chronological order (teams are unknown until the bracket resolves, so
 # we map each stage's API matches, sorted by kickoff, onto that round's fixed mid slots).
@@ -115,8 +118,7 @@ def api_by_stage(stage):
     for m in matches:
         if m.get('stage')!=stage: continue
         h=match_team(m['homeTeam'].get('name')); a=match_team(m['awayTeam'].get('name'))
-        ft=m.get('score',{}).get('fullTime',{}); w=m.get('score',{}).get('winner')
-        out.append({'h':h,'a':a,'hg':ft.get('home'),'ag':ft.get('away'),'w':w,'st':m.get('status')})
+        out.append({'h':h,'a':a,'score':m.get('score',{}) or {},'st':m.get('status')})
     return out
 API_STAGE={st:api_by_stage(st) for st in set(MID_STAGE.values())}
 def adv_of(mid):                     # advancing team recorded for a slot (None if undecided)
@@ -139,14 +141,34 @@ for mid in KO_ORDER:
     # find the API match (this round) that contains the expected home team
     m=next((x for x in API_STAGE[stage] if home_exp in (x['h'],x['a'])),None)
     if not m: continue
-    H,A=m['h'],m['a']; hg,ag,w=m['hg'],m['ag'],m['w']
-    if A==home_exp:                  # orient to wiring's home/away (swap API orientation if needed)
-        H,A=A,H
-        if hg is not None: hg,ag=ag,hg
-        w={'HOME_TEAM':'AWAY_TEAM','AWAY_TEAM':'HOME_TEAM'}.get(w,w)
-    if m['st']=='FINISHED' and hg is not None and ag is not None:
+    H,A=m['h'],m['a']; s=m['score']; st=m['st']; swap=(A==home_exp)
+    if swap: H,A=A,H
+    def ori(d):                      # read a score sub-dict in the wiring's home/away orientation
+        d=d or {}; hv,av=d.get('home'),d.get('away'); return (av,hv) if swap else (hv,av)
+    rh,ra=ori(s.get('regularTime')); eh,ea=ori(s.get('extraTime')); fh,fa=ori(s.get('fullTime'))
+    w=s.get('winner')
+    if swap: w={'HOME_TEAM':'AWAY_TEAM','AWAY_TEAM':'HOME_TEAM'}.get(w,w)
+    if st=='FINISHED':
+        # SCORELINE = on-pitch result (regulation + extra time), NOT the penalty-inflated fullTime.
+        # This is what the Excel grades (sign/goals/exact); a shootout shows as the level draw.
+        if rh is not None: hg,ag=rh+(eh or 0),ra+(ea or 0)
+        else: hg,ag=fh,fa
+        if hg is None or ag is None:
+            if H and A: ko[str(mid)]=[H,A,None,None,None]; k_sched+=1
+            continue
         adv=H if w=='HOME_TEAM' else A if w=='AWAY_TEAM' else None
-        ko[str(mid)]=[H,A,hg,ag,adv]; k_added+=1; api_final_ko[str(mid)]=[H,A,hg,ag,adv]
+        # penalty shootout: tally = fullTime - on-pitch, recorded only when level AND decided.
+        # If the feed gives a tied/invalid shootout, leave pens+adv blank (don't guess a winner).
+        penH=penA=None
+        shootout=(s.get('duration')=='PENALTY_SHOOTOUT') or (hg==ag and fh is not None and (fh,fa)!=(hg,ag))
+        if shootout and fh is not None:
+            ph,pa=fh-hg,fa-ag
+            if ph>=0 and pa>=0 and ph!=pa:
+                penH,penA=ph,pa
+                if adv is None: adv=H if ph>pa else A
+        if adv is None and hg!=ag: adv=H if hg>ag else A
+        entry=[H,A,hg,ag,adv]+([penH,penA] if penH is not None else [])
+        ko[str(mid)]=entry; k_added+=1; api_final_ko[str(mid)]=entry
     elif H and A:                    # matchup set but not played -> show teams, no score
         ko[str(mid)]=[H,A,None,None,None]; k_sched+=1
 
