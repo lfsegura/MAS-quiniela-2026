@@ -120,6 +120,7 @@ h1{letter-spacing:-.02em;color:var(--g600);font-weight:600}
 /* read-only published mode */
 .sc{pointer-events:none;border:none!important;background:transparent!important;box-shadow:none!important;color:var(--g600)!important;font-weight:600;width:auto;min-width:12px;padding:0;height:auto}
 .pk{font-size:.72em;color:var(--g400);font-weight:600;margin-left:1px;vertical-align:baseline}
+.adv{font-size:.82em;color:var(--g400);font-weight:600;margin-left:4px;white-space:nowrap}
 .sc:focus{outline:none!important}.toolbar{display:none!important}
 input.sc{width:1.8em;text-align:center;min-width:0}.flag{height:14px;width:auto;border-radius:2px;border:1px solid rgba(0,0,0,.12);vertical-align:middle;display:inline-block;object-fit:cover}
 .lbitem{display:flex;flex-direction:column}.row{cursor:pointer}
@@ -340,6 +341,7 @@ function koPicks(f,a,pl){if(!anyKoPreds())return '';let H='<div class="picks">';
   if(!pr){H+=`<span class="chip ${e==='LF'?'me':''}"><span class="who">${e}</span><span class="res"><span class="dash">–</span></span></span>`;return;}
   let pt=pl?koMp([pr[2],pr[3]],[a[2],a[3]],f.round):null;
   let ps=`${pr[0]?ab(pr[0]):'?'} ${pr[2]==null?'–':pr[2]}-${pr[3]==null?'–':pr[3]} ${pr[1]?ab(pr[1]):'?'}`;
+  if(pr[2]!=null&&pr[2]===pr[3]&&pr[4])ps+=`<span class="adv" title="avanza en penales">▸${ab(pr[4])}</span>`;
   H+=`<span class="chip ${e==='LF'?'me':''}"><span class="who">${e}</span><span class="res">${ps}${pt!=null?`<span class="pill ${pcls(pt)}">${pt}</span>`:''}</span></span>`;});return H+'</div>';}
 function renderKnockouts(){let el=document.getElementById('ko');if(!el)return;el.className=view==='date'?'':'grid';el.innerHTML=view==='date'?koByDate():koByRound();}
 function koByRound(){let rounds=[['R32','R32'],['R16','R16'],['QF','QF'],['SF','SF'],['F','Final y 3.º puesto']];let H=koPendingMsg();
