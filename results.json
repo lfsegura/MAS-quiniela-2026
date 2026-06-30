@@ -325,9 +325,9 @@
 "77": [
 "Francia",
 "Suecia",
-null,
-null,
-null
+3,
+0,
+"Francia"
 ],
 "78": [
 "Costa de Marfil",
@@ -416,6 +416,13 @@ null
 "91": [
 "Brasil",
 "Noruega",
+null,
+null,
+null
+],
+"89": [
+"Paraguay",
+"Francia",
 null,
 null,
 null
