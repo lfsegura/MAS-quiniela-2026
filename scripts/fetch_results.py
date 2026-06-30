@@ -121,11 +121,16 @@ def api_by_stage(stage):
         out.append({'h':h,'a':a,'score':m.get('score',{}) or {},'st':m.get('status')})
     return out
 API_STAGE={st:api_by_stage(st) for st in set(MID_STAGE.values())}
+# Load knockout overrides early so the bracket wiring sees a manually-set advancer and propagates it
+# into later rounds (e.g. a penalty winner we fixed by hand). The values are also applied at the end.
+try: OVK={str(k):v for k,v in ((json.load(open(os.path.join(ROOT,'overrides.json'))).get('ko')) or {}).items()}
+except Exception: OVK={}
+def _slot(mid): return OVK.get(str(mid)) or ko.get(str(mid))   # manual override wins over API-derived
 def adv_of(mid):                     # advancing team recorded for a slot (None if undecided)
-    e=ko.get(str(mid)); return e[4] if e else None
+    e=_slot(mid); return e[4] if (e and len(e)>4) else None
 def loser_of(mid):
-    e=ko.get(str(mid))
-    if not e or e[4] is None: return None
+    e=_slot(mid)
+    if not e or len(e)<5 or e[4] is None: return None
     return e[1] if e[4]==e[0] else e[0]
 
 k_added=0; unmatched_team=0; k_sched=0; api_final_ko={}
@@ -137,20 +142,27 @@ for mid in KO_ORDER:
     elif mid in THIRD: home_exp,away_exp=loser_of(THIRD[mid][0]),loser_of(THIRD[mid][1])
     elif mid in FINAL: home_exp,away_exp=adv_of(FINAL[mid][0]),adv_of(FINAL[mid][1])
     else: continue
-    if not home_exp: continue        # feeders/group not resolved yet -> slot stays empty
-    # find the API match (this round) that contains the expected home team
+    if not home_exp: continue        # feeding round not resolved yet -> slot stays empty
+    is_r32 = mid in R32_HOME
+    # find the API match (this round) containing the known home team (used for the SCORE; and for
+    # R32 teams). May not exist yet for later rounds -> we still show the pairing from the wiring.
     m=next((x for x in API_STAGE[stage] if home_exp in (x['h'],x['a'])),None)
-    if not m: continue
-    H,A=m['h'],m['a']; s=m['score']; st=m['st']; swap=(A==home_exp)
-    if swap: H,A=A,H
+    s=m['score'] if m else {}; st=m['st'] if m else None; swap=bool(m) and (m['a']==home_exp)
     def ori(d):                      # read a score sub-dict in the wiring's home/away orientation
         d=d or {}; hv,av=d.get('home'),d.get('away'); return (av,hv) if swap else (hv,av)
-    rh,ra=ori(s.get('regularTime')); eh,ea=ori(s.get('extraTime')); fh,fa=ori(s.get('fullTime'))
-    w=s.get('winner')
-    if swap: w={'HOME_TEAM':'AWAY_TEAM','AWAY_TEAM':'HOME_TEAM'}.get(w,w)
+    # MATCHUP TEAMS: R32 come from the API fixture (3rd-place slots resolved by FIFA's allocation);
+    # R16+ come from our own bracket wiring (the feeder winners), so a pairing shows the moment both
+    # feeder games are decided -- the feed often lags and leaves the next round's away team blank.
+    if is_r32:
+        H,A=(m['a'],m['h']) if swap else (m['h'],m['a']) if m else (home_exp,None)
+    else:
+        H,A=home_exp, (away_exp or ((m['h'] if swap else m['a']) if m else None))
     if st=='FINISHED':
         # SCORELINE = on-pitch result (regulation + extra time), NOT the penalty-inflated fullTime.
         # This is what the Excel grades (sign/goals/exact); a shootout shows as the level draw.
+        rh,ra=ori(s.get('regularTime')); eh,ea=ori(s.get('extraTime')); fh,fa=ori(s.get('fullTime'))
+        w=s.get('winner')
+        if swap: w={'HOME_TEAM':'AWAY_TEAM','AWAY_TEAM':'HOME_TEAM'}.get(w,w)
         if rh is not None: hg,ag=rh+(eh or 0),ra+(ea or 0)
         else: hg,ag=fh,fa
         if hg is None or ag is None:
