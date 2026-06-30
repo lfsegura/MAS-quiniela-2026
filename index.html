@@ -273,7 +273,10 @@ function compute(){let sc={},det={};ENT.forEach(e=>{sc[e]={m:0,gw:0,ko:0,bn:0};d
  let advSet=(a,b)=>{let s=new Set();for(let m=a;m<=b;m++){let v=koActual[m]||koActual[String(m)];if(v&&v[4])s.add(v[4]);}return s;};
  let actSets={R16:advSet(73,88),QF:advSet(89,96),SF:advSet(97,100)};
  Object.keys(actSets).forEach(k=>{if(!actSets[k].size)actSets[k]=null;});
- let fin=koActual[104]||koActual['104'];let finalTeams=(fin&&fin[0]&&fin[1])?new Set([fin[0],fin[1]]):null,champ=fin?koWinner(fin):null;
+ // finalists = SF winners (advancers of mid101/102), so credit lands when each semifinal is decided,
+ // not only once the final fixture is published — consistent with the R16/QF/SF advancement above.
+ let finalSet=advSet(101,102);let finalTeams=finalSet.size?finalSet:null;
+ let fin=koActual[104]||koActual['104'];let champ=fin?koWinner(fin):null;
  ENT.forEach(e=>{let ko=koPreds[e]||{};
   if(r32){let c=0;teamsIn(ko,73,88).forEach(t=>{if(r32.has(t))c++;});sc[e].bn+=c*KOBON.r32;det[e].push({lbl:'Avance a R32',calc:c+' × 4',pts:c*KOBON.r32});}
   [['Avance a R16','r16',89,96,'R16'],['Avance a QF','qf',97,100,'QF'],['Avance a SF','sf',101,102,'SF']].forEach(([lbl,bk,a,b,rk])=>{if(actSets[rk]){let c=0;teamsIn(ko,a,b).forEach(t=>{if(actSets[rk].has(t))c++;});sc[e].bn+=c*KOBON[bk];det[e].push({lbl,calc:c+' × '+KOBON[bk],pts:c*KOBON[bk]});}});
