@@ -266,8 +266,13 @@ function compute(){let sc={},det={};ENT.forEach(e=>{sc[e]={m:0,gw:0,ko:0,bn:0};d
  let koPlayed=0;Object.keys(koActual).forEach(m=>{let act=koActual[m];if(!act||act[2]==null)return;koPlayed++;let rd=roundOf(+m);
   ENT.forEach(e=>{let pr=(koPreds[e]||{})[m];let pr2=pr?[pr[2],pr[3]]:null;let p=koMp(pr2,[act[2],act[3]],rd);if(p!=null)sc[e].ko+=p;});});
  // advancement bonuses (gated on actual availability)
- let r32=actualR32(),ranges={R16:[89,96],QF:[97,100],SF:[101,102]},actSets={};
- Object.keys(ranges).forEach(k=>{let[a,b]=ranges[k];let any=false;for(let m=a;m<=b;m++)if(koActual[m]||koActual[String(m)])any=true;actSets[k]=any?teamsIn(koActual,a,b):null;});
+ let r32=actualR32();
+ // A team REACHES a round by winning its game in the previous round — so credit advancement from
+ // the actual advancers of the feeding round (R16<-R32 winners, QF<-R16, SF<-QF), which accrues as
+ // games finish rather than waiting for the next round's fixtures to appear in the feed.
+ let advSet=(a,b)=>{let s=new Set();for(let m=a;m<=b;m++){let v=koActual[m]||koActual[String(m)];if(v&&v[4])s.add(v[4]);}return s;};
+ let actSets={R16:advSet(73,88),QF:advSet(89,96),SF:advSet(97,100)};
+ Object.keys(actSets).forEach(k=>{if(!actSets[k].size)actSets[k]=null;});
  let fin=koActual[104]||koActual['104'];let finalTeams=(fin&&fin[0]&&fin[1])?new Set([fin[0],fin[1]]):null,champ=fin?koWinner(fin):null;
  ENT.forEach(e=>{let ko=koPreds[e]||{};
   if(r32){let c=0;teamsIn(ko,73,88).forEach(t=>{if(r32.has(t))c++;});sc[e].bn+=c*KOBON.r32;det[e].push({lbl:'Avance a R32',calc:c+' × 4',pts:c*KOBON.r32});}
@@ -345,7 +350,7 @@ function koPicks(f,a,pl){if(!anyKoPreds())return '';let H='<div class="picks">';
   H+=`<span class="chip ${e==='LF'?'me':''}"><span class="who">${e}</span><span class="res">${ps}${pt!=null?`<span class="pill ${pcls(pt)}">${pt}</span>`:''}</span></span>`;});return H+'</div>';}
 function renderKnockouts(){let el=document.getElementById('ko');if(!el)return;el.className=view==='date'?'':'grid';el.innerHTML=view==='date'?koByDate():koByRound();}
 function koByRound(){let rounds=[['R32','R32'],['R16','R16'],['QF','QF'],['SF','SF'],['F','Final y 3.º puesto']];let H=koPendingMsg();
- rounds.forEach(([rk,name])=>{let fs=koFix.filter(f=>f.round===rk);if(!fs.length)return;
+ rounds.forEach(([rk,name])=>{let fs=koFix.filter(f=>f.round===rk).sort((x,y)=>x.dt<y.dt?-1:x.dt>y.dt?1:0);if(!fs.length)return;
   H+=`<div class="gc"><div class="gch"><b>${name}</b><span class="badge grp" style="background:var(--g100);border-color:var(--g200);color:var(--g400)">${KOPTS[rk][0]}/${KOPTS[rk][1]}/${KOPTS[rk][2]} pts</span></div><div class="mt">`;
   fs.forEach(f=>{let a=koActual[f.mid]||koActual[String(f.mid)]||[null,null,null,null,null];let pl=a[2]!=null;let hn=a[0]||'Por definir',an=a[1]||'Por definir';
    H+=`<div class="m">${koWhen(f)}<div class="mr"><div class="tm h"><span class="nme">${hn}</span><span class="fl">${a[0]?fl(a[0]):''}</span></div>`+
