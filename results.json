@@ -332,9 +332,9 @@ null
 "78": [
 "Costa de Marfil",
 "Noruega",
-null,
-null,
-null
+1,
+2,
+"Noruega"
 ],
 "79": [
 "México",
@@ -409,6 +409,13 @@ null
 "90": [
 "Canadá",
 "Marruecos",
+null,
+null,
+null
+],
+"91": [
+"Brasil",
+"Noruega",
 null,
 null,
 null
