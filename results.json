@@ -346,9 +346,9 @@
 "80": [
 "Inglaterra",
 "RD Congo",
-null,
-null,
-null
+2,
+1,
+"Inglaterra"
 ],
 "81": [
 "Estados Unidos",
@@ -423,6 +423,13 @@ null
 "89": [
 "Paraguay",
 "Francia",
+null,
+null,
+null
+],
+"92": [
+"México",
+"Inglaterra",
 null,
 null,
 null
