@@ -353,9 +353,9 @@
 "81": [
 "Estados Unidos",
 "Bosnia y Herzegovina",
-null,
-null,
-null
+2,
+0,
+"Estados Unidos"
 ],
 "82": [
 "Bélgica",
@@ -430,6 +430,13 @@ null
 "92": [
 "México",
 "Inglaterra",
+null,
+null,
+null
+],
+"94": [
+"Estados Unidos",
+"Bélgica",
 null,
 null,
 null
