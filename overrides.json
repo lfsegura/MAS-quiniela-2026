@@ -1,5 +1,7 @@
 {
-  "_comment": "Manual corrections applied AFTER the API fetch (override always wins and persists across fetches). Use when football-data.org reports a wrong score, or to show a just-finished match before the feed flips it to FINISHED. group format: {\"<mid>\": [home, away]}. ko format: {\"<mid>\": [homeES, awayES, homeGoals, awayGoals, advancingTeamES, penH?, penA?]} — homeGoals/awayGoals are the on-pitch (regulation) score; penH/penA are the shootout tally (shown FIFA-style 1(2)). Entries auto-remove once the API reports that match FINISHED with a matching value. Current: ko mid75 = Holanda 1-1 Marruecos, pens 2-3, Marruecos avanza (API stuck on an invalid tied 4-4 shootout; auto-removes when it reports a clean 1-1 with Morocco winning).",
+  "_comment": "Manual corrections applied AFTER the API fetch (override always wins and persists across fetches). Use when football-data.org reports a wrong score, or to show a just-finished match before the feed flips it to FINISHED. group format: {\"<mid>\": [home, away]}. ko format: {\"<mid>\": [homeES, awayES, homeGoals, awayGoals, advancingTeamES, penH?, penA?]} — homeGoals/awayGoals are the on-pitch (regulation) score; penH/penA are the shootout tally (shown FIFA-style 1(2)). Entries auto-remove once the API reports that match FINISHED with a matching value. Current: ko mid83 = Portugal 2-1 Croacia, Portugal avanza (reported final; API still IN_PLAY at 2-2, auto-removes when it reports FINISHED matching).",
   "group": {},
-  "ko": {}
+  "ko": {
+    "83": ["Portugal", "Croacia", 2, 1, "Portugal"]
+  }
 }
