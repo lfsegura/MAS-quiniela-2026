@@ -395,9 +395,9 @@
 "87": [
 "Colombia",
 "Ghana",
-null,
-null,
-null
+1,
+0,
+"Colombia"
 ],
 "88": [
 "Australia",
@@ -453,6 +453,13 @@ null
 "95": [
 "Argentina",
 "Egipto",
+null,
+null,
+null
+],
+"96": [
+"Suiza",
+"Colombia",
 null,
 null,
 null
