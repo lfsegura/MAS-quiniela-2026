@@ -432,9 +432,9 @@
 "92": [
 "México",
 "Inglaterra",
-null,
-null,
-null
+2,
+3,
+"Inglaterra"
 ],
 "94": [
 "Estados Unidos",
@@ -467,6 +467,13 @@ null
 "97": [
 "Francia",
 "Marruecos",
+null,
+null,
+null
+],
+"99": [
+"Noruega",
+"Inglaterra",
 null,
 null,
 null
