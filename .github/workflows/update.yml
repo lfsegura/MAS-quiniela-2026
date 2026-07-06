@@ -5,21 +5,41 @@ on:
   workflow_dispatch:         # allow manual run
 permissions:
   contents: write
+# Never let two runs (scheduled + manual, or overlapping schedules) race each other into a
+# push conflict or a doomed concurrent Pages build. Queue them instead of overlapping.
+concurrency:
+  group: update-results
+  cancel-in-progress: false
 jobs:
   update:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0        # full history so a rebase-on-push works
       - uses: actions/setup-python@v5
         with: { python-version: '3.x' }
       - name: Fetch results
         env:
           FOOTBALL_DATA_TOKEN: ${{ secrets.FOOTBALL_DATA_TOKEN }}
         run: python scripts/fetch_results.py
-      - name: Commit changes
+      - name: Commit & push (only when results changed, rebase + retry)
         run: |
           git config user.name "quiniela-bot"
           git config user.email "bot@users.noreply.github.com"
           git add results.json overrides.json
-          git commit -m "auto: update results" || echo "no changes"
-          git push
+          # Skip entirely when nothing changed -> no needless commit, no needless Pages rebuild.
+          if git diff --cached --quiet; then
+            echo "No result changes; skipping commit (no Pages rebuild)."
+            exit 0
+          fi
+          git commit -m "auto: update results"
+          # Push with rebase-retry so a race with a manual push (or another run) can't wedge it.
+          n=0
+          until git push; do
+            n=$((n+1))
+            if [ "$n" -ge 5 ]; then echo "push failed after $n attempts"; exit 1; fi
+            echo "push rejected; rebasing on origin/main (attempt $n)…"
+            git pull --rebase --autostash origin main || true
+            sleep 3
+          done
