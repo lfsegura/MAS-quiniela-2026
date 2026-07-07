@@ -460,9 +460,11 @@
 "96": [
 "Suiza",
 "Colombia",
-null,
-null,
-null
+0,
+0,
+"Suiza",
+4,
+3
 ],
 "97": [
 "Francia",
@@ -481,6 +483,13 @@ null
 "98": [
 "España",
 "Bélgica",
+null,
+null,
+null
+],
+"100": [
+"Argentina",
+"Suiza",
 null,
 null,
 null
